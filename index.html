@@ -1,0 +1,4969 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparativo de Medicamentos · Cercafe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --ink:#221812;
+  --ink-2:#2E2019;
+  --vinotinto:#B10C14;
+  --vinotinto-bright:#D31620;
+  --vinotinto-deep:#7A0810;
+  --sage:#7C9A5D;
+  --sage-deep:#587239;
+  --gold:#C08A2E;
+  --paper:#FFFFFF;
+  --paper-2:#FBF4EE;
+  --paper-3:#F0E4D8;
+  --ash:#6B6152;
+  --ash-dark:#8B8172;
+  --line:#E7DCCB;
+  --text-dark:#221812;
+  --text-mute:#6B6152;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--text-dark);
+  font-family:'Inter',sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:'IBM Plex Mono',monospace;}
+.display{font-family:'Fraunces',serif;}
+
+/* ============ HERO ============ */
+.hero{
+  background:
+    radial-gradient(circle at 92% -10%, rgba(177,12,20,0.07), transparent 50%),
+    var(--paper);
+  color:var(--text-dark);
+  padding:40px 32px 44px;
+  position:relative;
+  overflow:hidden;
+  border-bottom:3px solid var(--vinotinto);
+}
+.hero-inner{
+  max-width:1160px;
+  margin:0 auto;
+  position:relative;
+}
+.brand-row{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  margin-bottom:28px;
+}
+.brand-row img{
+  height:54px;
+  width:auto;
+  display:block;
+}
+.brand-row .div-line{
+  width:1px;
+  height:34px;
+  background:var(--line);
+}
+.eyebrow{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11.5px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--vinotinto-deep);
+  margin:0;
+}
+.eyebrow .dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--vinotinto);
+  box-shadow:0 0 0 3px rgba(177,12,20,0.18);
+}
+.hero h1{
+  font-family:'Fraunces',serif;
+  font-optical-sizing:auto;
+  font-weight:600;
+  font-size:clamp(32px, 4.4vw, 58px);
+  line-height:1.04;
+  letter-spacing:-0.01em;
+  margin:0 0 20px;
+  max-width:16ch;
+  color:var(--ink);
+}
+.hero h1 em{
+  font-style:italic;
+  font-weight:400;
+  color:var(--vinotinto);
+}
+.hero p.lede{
+  max-width:56ch;
+  font-size:16.5px;
+  line-height:1.6;
+  color:var(--text-mute);
+  margin:0 0 40px;
+}
+
+.gauge-row{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:0;
+  border-top:1px solid var(--line);
+}
+.gauge{
+  padding:22px 22px 4px 0;
+  border-right:1px solid var(--line);
+  position:relative;
+}
+.gauge:last-child{border-right:none;}
+.gauge .ticks{
+  display:flex;
+  gap:3px;
+  margin-bottom:14px;
+}
+.gauge .ticks span{
+  width:3px;height:9px;background:var(--paper-3);
+}
+.gauge .ticks span:nth-child(4n+1){background:var(--vinotinto);height:13px;}
+.gauge .val{
+  font-family:'IBM Plex Mono',monospace;
+  font-weight:600;
+  font-size:clamp(24px,2.6vw,34px);
+  line-height:1;
+  color:var(--ink);
+  margin-bottom:8px;
+  display:block;
+}
+.gauge .val.accent{color:var(--vinotinto);}
+.gauge .val.sage{color:var(--sage-deep);}
+.gauge .lbl{
+  font-size:12.5px;
+  color:var(--text-mute);
+  line-height:1.4;
+  max-width:22ch;
+}
+
+/* ============ CONTROLS ============ */
+.controls-wrap{
+  background:var(--paper);
+  border-bottom:1px solid var(--line);
+  position:sticky;
+  top:0;
+  z-index:20;
+  box-shadow:0 8px 24px -18px rgba(0,0,0,0.35);
+}
+.controls{
+  max-width:1160px;
+  margin:0 auto;
+  padding:18px 32px;
+  display:flex;
+  gap:14px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+.field label{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10.5px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--text-mute);
+}
+.search-field{flex:1;min-width:220px;}
+input[type="search"], select{
+  font-family:'Inter',sans-serif;
+  font-size:14.5px;
+  padding:10px 14px;
+  border:1.5px solid var(--paper-3);
+  border-radius:8px;
+  background:#fff;
+  color:var(--text-dark);
+  outline:none;
+  transition:border-color .15s ease, box-shadow .15s ease;
+}
+input[type="search"]{width:100%;}
+input[type="search"]:focus, select:focus{
+  border-color:var(--vinotinto);
+  box-shadow:0 0 0 3px rgba(140,36,56,0.14);
+}
+select{cursor:pointer; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236B6152'%3E%3Cpath d='M5.5 7.5l4.5 4.5 4.5-4.5' stroke='%236B6152' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; padding-right:34px;}
+.toggle-group{display:flex; gap:6px;}
+.toggle-btn{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11.5px;
+  letter-spacing:.03em;
+  padding:9px 13px;
+  border-radius:8px;
+  border:1.5px solid var(--paper-3);
+  background:#fff;
+  color:var(--text-mute);
+  cursor:pointer;
+  white-space:nowrap;
+  transition:all .15s ease;
+}
+.toggle-btn.active{
+  background:var(--vinotinto);
+  border-color:var(--vinotinto);
+  color:var(--paper);
+}
+.count-pill{
+  margin-left:auto;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+  color:var(--text-mute);
+  background:var(--paper-2);
+  padding:8px 14px;
+  border-radius:20px;
+  white-space:nowrap;
+}
+.count-pill b{color:var(--vinotinto);}
+
+.upload-btn{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11.5px;
+  letter-spacing:.03em;
+  padding:9px 14px;
+  border-radius:8px;
+  border:1.5px dashed var(--vinotinto);
+  background:var(--paper-2);
+  color:var(--vinotinto-deep);
+  cursor:pointer;
+  white-space:nowrap;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  transition:all .15s ease;
+}
+.upload-btn:hover{background:#FBEAE9; border-style:solid;}
+.upload-msg{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11.5px;
+  padding:8px 13px;
+  border-radius:8px;
+  max-width:340px;
+  display:none;
+}
+.upload-msg.show{display:block;}
+.upload-msg.ok{background:#EEF3E7; color:var(--sage-deep); border:1px solid var(--sage);}
+.upload-msg.err{background:#FBEAE9; color:var(--vinotinto-deep); border:1px solid var(--vinotinto);}
+
+/* ============ UPLOAD BAR ============ */
+.upload-bar{
+  background:var(--paper-2);
+  border-bottom:1px solid var(--line);
+}
+.upload-inner{
+  max-width:1160px;
+  margin:0 auto;
+  padding:12px 32px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+}
+.upload-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12.5px;
+  font-weight:600;
+  color:#fff;
+  background:var(--vinotinto);
+  padding:9px 16px;
+  border-radius:8px;
+  cursor:pointer;
+  border:1.5px solid var(--vinotinto);
+  transition:background .15s ease;
+  white-space:nowrap;
+}
+.upload-btn:hover{background:var(--vinotinto-deep); border-color:var(--vinotinto-deep);}
+.upload-btn input[type="file"]{
+  position:absolute;
+  width:1px;height:1px;
+  opacity:0;
+  overflow:hidden;
+}
+.upload-status{
+  font-size:12.5px;
+  color:var(--text-mute);
+  flex:1;
+  min-width:180px;
+}
+.upload-status b{color:var(--text-dark);}
+.upload-status.is-error{color:var(--vinotinto);}
+.reset-link{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+  color:var(--text-mute);
+  background:none;
+  border:none;
+  text-decoration:underline;
+  cursor:pointer;
+  padding:0;
+}
+.reset-link:hover{color:var(--vinotinto-deep);}
+
+/* ============ MAIN ============ */
+main{max-width:1160px; margin:0 auto; padding:36px 32px 90px;}
+
+.tipo-heading{
+  display:flex;
+  align-items:baseline;
+  gap:12px;
+  margin:44px 0 18px;
+}
+.tipo-heading:first-child{margin-top:6px;}
+.tipo-heading .num{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+  background:var(--vinotinto);
+  color:#fff;
+  padding:3px 9px;
+  border-radius:5px;
+}
+.tipo-heading h2{
+  font-family:'Fraunces',serif;
+  font-weight:600;
+  font-size:22px;
+  margin:0;
+  color:var(--vinotinto-deep);
+}
+.tipo-heading .rule{
+  flex:1;
+  height:1px;
+  background:var(--line);
+}
+
+.group-card{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:22px 24px 20px;
+  margin-bottom:16px;
+}
+.group-card.top-impact{
+  border-color:var(--vinotinto);
+  box-shadow:0 0 0 1px var(--vinotinto), 0 14px 28px -20px rgba(140,36,56,0.45);
+}
+.group-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:16px;
+  margin-bottom:16px;
+  flex-wrap:wrap;
+}
+.group-head h3{
+  font-family:'Fraunces',serif;
+  font-weight:600;
+  font-size:19px;
+  margin:0 0 4px;
+  color:var(--text-dark);
+}
+.group-meta{
+  font-size:12.5px;
+  color:var(--text-mute);
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+.group-meta .chip{
+  background:var(--paper-2);
+  padding:2px 9px;
+  border-radius:20px;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+}
+.impact-badge{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:13px;
+  font-weight:600;
+  color:#fff;
+  background:var(--vinotinto);
+  padding:7px 14px;
+  border-radius:8px;
+  white-space:nowrap;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.impact-badge.low{background:var(--sage-deep);}
+.impact-badge .flame{font-size:14px;}
+
+/* ruler / scale visualization */
+.scale-wrap{margin-top:6px;}
+.scale-track{
+  position:relative;
+  height:2px;
+  background:repeating-linear-gradient(90deg, var(--paper-3) 0, var(--paper-3) 1px, transparent 1px, transparent 10px);
+  margin:0 8px 0 8px;
+}
+.scale-track::before{
+  content:"";
+  position:absolute;
+  left:0;right:0;top:0;
+  height:2px;
+  background:var(--line);
+}
+.product-row{
+  display:grid;
+  grid-template-columns:240px 1fr 250px;
+  align-items:center;
+  gap:14px;
+  padding:14px 0;
+  border-top:1px dashed var(--line);
+}
+.product-row:first-child{border-top:none;}
+.prod-id{
+  min-width:0;
+}
+.prod-id .name{
+  font-weight:700;
+  font-size:16.5px;
+  color:var(--text-dark);
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.prod-id .name .pres-tag{
+  font-weight:500;
+  font-size:12.5px;
+  color:var(--vinotinto-deep);
+  background:#FBEAE9;
+  padding:1px 6px;
+  border-radius:9px;
+  margin-left:4px;
+  white-space:nowrap;
+}
+.prod-id .lab{
+  font-size:13px;
+  color:var(--text-mute);
+  text-transform:uppercase;
+  letter-spacing:.03em;
+}
+.prod-id .dosis{
+  font-size:11.5px;
+  color:var(--sage-deep);
+  margin-top:2px;
+  font-family:'IBM Plex Mono',monospace;
+}
+.prod-id .erp-line{
+  font-size:11px;
+  color:var(--text-mute);
+  margin-top:3px;
+  font-family:'IBM Plex Mono',monospace;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.prod-id .costo-line{
+  font-size:11.5px;
+  color:var(--gold);
+  margin-top:3px;
+  font-weight:600;
+  font-family:'IBM Plex Mono',monospace;
+}
+.unit-lbl{
+  display:block;
+  font-size:10px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--text-mute);
+  margin-bottom:2px;
+}
+.bar-lane{
+  position:relative;
+  height:26px;
+  display:flex;
+  align-items:center;
+}
+.bar-fill{
+  position:absolute;
+  left:0; top:50%;
+  height:8px;
+  transform:translateY(-50%);
+  border-radius:5px;
+  background:var(--vinotinto);
+}
+.bar-fill.best{background:var(--sage);}
+.marker{
+  position:absolute;
+  top:50%;
+  width:14px;height:14px;
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  background:var(--vinotinto-deep);
+  border:2.5px solid var(--paper);
+  box-shadow:0 0 0 1.5px var(--vinotinto);
+  z-index:2;
+}
+.marker.best{
+  background:var(--sage-deep);
+  box-shadow:0 0 0 1.5px var(--sage);
+  width:16px;height:16px;
+}
+.price-cell{
+  text-align:right;
+}
+.price-cell .amt{
+  font-family:'IBM Plex Mono',monospace;
+  font-weight:700;
+  font-size:21px;
+  color:var(--text-dark);
+  display:block;
+}
+.price-cell .diff{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:15px;
+  font-weight:700;
+  color:var(--vinotinto);
+}
+.price-cell .diff.best-tag{
+  color:var(--sage-deep);
+}
+.price-cell .valor-total{
+  display:block;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:15px;
+  color:var(--text-mute);
+  margin-top:6px;
+}
+.single-note{
+  font-size:12.5px;
+  color:var(--text-mute);
+  font-style:italic;
+  margin-top:2px;
+}
+
+/* ============ TABS ============ */
+.tab-bar-wrap{
+  background:var(--paper);
+  border-bottom:1px solid var(--line);
+}
+.tab-bar{
+  max-width:1160px;
+  margin:0 auto;
+  padding:0 32px;
+  display:flex;
+  gap:6px;
+}
+.tab-btn{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:13px;
+  font-weight:600;
+  padding:14px 18px 12px;
+  border:none;
+  background:none;
+  color:var(--text-mute);
+  cursor:pointer;
+  border-bottom:3px solid transparent;
+  transition:all .15s ease;
+}
+.tab-btn:hover{color:var(--text-dark);}
+.tab-btn.active{
+  color:var(--vinotinto);
+  border-bottom-color:var(--vinotinto);
+}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* ============ EJEMPLO REAL ============ */
+.real-toolbar{
+  max-width:1160px;
+  margin:0 auto;
+  padding:24px 32px 8px;
+  display:flex;
+  gap:18px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.chk-label{
+  font-size:13px;
+  color:var(--text-mute);
+  display:flex;
+  align-items:center;
+  gap:7px;
+  cursor:pointer;
+}
+.chk-label input{accent-color:var(--vinotinto); width:15px; height:15px;}
+#pedidoEmpty{max-width:1160px; margin:0 auto; padding:60px 32px;}
+#pedidoResults{max-width:1160px; margin:0 auto; padding:8px 32px 90px;}
+.real-summary{
+  border:1px solid var(--line);
+  border-radius:14px;
+  margin-bottom:28px;
+  background:var(--paper-2);
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(210px, 1fr));
+  row-gap:24px;
+}
+.real-summary .gauge{
+  padding:22px 24px 20px;
+  border-right:1px solid var(--line);
+  border-bottom:none;
+}
+.real-summary .gauge .val{font-size:clamp(17px, 1.9vw, 23px); word-break:break-word;}
+.real-summary .gauge .lbl{max-width:none;}
+@media (max-width:920px){
+  .real-summary{grid-template-columns:repeat(2,1fr);}
+  .real-summary .gauge:nth-child(2n){border-right:none;}
+  .real-summary .gauge:nth-child(n+3){border-top:1px solid var(--line);}
+}
+@media (max-width:560px){
+  .real-summary{grid-template-columns:1fr;}
+  .real-summary .gauge{border-right:none; border-top:1px solid var(--line);}
+  .real-summary .gauge:first-child{border-top:none;}
+}
+
+.pedido-table-scroll{overflow-x:auto; border:1px solid var(--line); border-radius:14px;}
+.pedido-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+  min-width:980px;
+}
+.pedido-table thead th{
+  text-align:left;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--text-mute);
+  padding:12px 14px;
+  border-bottom:2px solid var(--line);
+  background:var(--paper-2);
+  white-space:nowrap;
+}
+.pedido-table td{
+  padding:13px 14px;
+  border-bottom:1px solid var(--line);
+  vertical-align:top;
+  background:#fff;
+}
+.pedido-table tr.unmatched td{background:var(--paper-2); color:var(--text-mute);}
+.pedido-table .amt{font-family:'IBM Plex Mono',monospace; font-weight:600; white-space:nowrap;}
+.status-badge{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  font-weight:600;
+  padding:4px 9px;
+  border-radius:20px;
+  white-space:nowrap;
+  display:inline-block;
+}
+.status-badge.auto{background:#EEF3E7; color:var(--sage-deep);}
+.status-badge.molecula{background:#F0EAE0; color:var(--ash-dark);}
+.status-badge.manual{background:#FDF1DE; color:var(--gold);}
+.status-badge.none{background:#FBEAE9; color:var(--vinotinto-deep);}
+.status-badge.review{background:#FDF1DE; color:#96660E;}
+.pedido-table tr.review td{background:#FFFBF2;}
+.confirm-btn{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  font-weight:600;
+  padding:7px 11px;
+  border-radius:7px;
+  border:1.5px solid var(--gold);
+  background:#fff;
+  color:#96660E;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.confirm-btn:hover{background:#FDF1DE;}
+.reassign-select{
+  font-family:'Inter',sans-serif;
+  font-size:12px;
+  padding:6px 8px;
+  border:1px solid var(--paper-3);
+  border-radius:7px;
+  max-width:210px;
+  width:100%;
+  background:#fff;
+  color:var(--text-dark);
+}
+.savings-pos{color:var(--sage-deep); font-weight:700; white-space:nowrap;}
+.savings-neg{color:var(--vinotinto); font-weight:700; white-space:nowrap;}
+.best-opt-name{font-weight:600; color:var(--text-dark);}
+.best-opt-lab{color:var(--text-mute); font-size:11.5px;}
+
+.real-section-title{
+  font-family:'Fraunces',serif;
+  font-weight:600;
+  font-size:18px;
+  color:var(--vinotinto-deep);
+  margin:32px 0 14px;
+}
+.mini-btn{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  font-weight:600;
+  padding:8px 12px;
+  border-radius:7px;
+  border:1.5px solid var(--paper-3);
+  background:#fff;
+  color:var(--text-mute);
+  cursor:pointer;
+  white-space:nowrap;
+}
+.mini-btn:hover{background:var(--paper-2);}
+.mini-btn.danger{border-color:var(--vinotinto); color:var(--vinotinto-deep);}
+.mini-btn.danger:hover{background:#FBEAE9;}
+
+.pedido-card{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  margin-bottom:14px;
+  overflow:hidden;
+}
+.pedido-card-head{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  flex-wrap:wrap;
+  padding:16px 20px;
+}
+.pedido-card-title{
+  font-family:'Fraunces',serif;
+  font-weight:600;
+  font-size:16.5px;
+  color:var(--text-dark);
+}
+.pedido-card-meta{
+  font-size:11.5px;
+  color:var(--text-mute);
+  margin-top:3px;
+}
+.pedido-card-nums{
+  display:flex;
+  gap:22px;
+  margin-left:auto;
+}
+.pedido-card-nums > div{display:flex; flex-direction:column; align-items:flex-end;}
+.lbl-mini{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9.5px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--text-mute);
+  margin-bottom:2px;
+}
+.pedido-card-nums .amt{font-size:15px;}
+.amt.sage-text{color:var(--sage-deep);}
+.pedido-card-actions{display:flex; gap:8px;}
+.pedido-card-detail{
+  border-top:1px solid var(--line);
+  padding:16px 20px 20px;
+  background:var(--paper-2);
+}
+.proj-note{
+  font-size:12px;
+  color:var(--text-mute);
+  font-style:italic;
+  max-width:80ch;
+}
+.admin-only{display:none !important;}
+body.admin-mode .field.admin-only{display:flex !important;}
+body.admin-mode .tab-btn.admin-only{display:inline-block !important;}
+body.admin-mode button.mini-btn.admin-only{display:inline-block !important;}
+body.admin-mode span.admin-only{display:inline !important;}
+.empty-state{
+  text-align:center;
+  padding:70px 20px;
+  color:var(--text-mute);
+}
+.empty-state .display{font-size:22px; color:var(--vinotinto-deep); margin-bottom:8px;}
+
+footer{
+  background:var(--paper-2);
+  color:var(--text-mute);
+  padding:28px 32px;
+  font-size:12px;
+  line-height:1.7;
+  border-top:2px solid var(--vinotinto);
+}
+footer .foot-inner{max-width:1160px; margin:0 auto; display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap;}
+footer b{color:var(--vinotinto-deep);}
+
+@media (max-width:760px){
+  .gauge-row{grid-template-columns:1fr 1fr;}
+  .gauge{border-right:none; border-bottom:1px solid rgba(244,239,230,0.16); padding-bottom:16px;}
+  .product-row{grid-template-columns:1fr; gap:6px;}
+  .bar-lane{order:3;}
+  .price-cell{text-align:left; order:2;}
+  .count-pill{margin-left:0; order:99; width:100%;}
+  .controls{flex-direction:column; align-items:stretch;}
+}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="brand-row">
+      <img src="data:image/png;base64,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" alt="Cercafe - La Carne de Cerdo del Eje Cafetero">
+      <div class="div-line"></div>
+      <div class="eyebrow"><span class="dot"></span> GESTIÓN TÉCNICA ESPECIALIZADA</div>
+    </div>
+    <h1>La misma molécula. <em>Precios muy distintos.</em></h1>
+    <p class="lede">Comparativo de medicamentos veterinarios porcinos por laboratorio: misma molécula, mismo grupo de uso, precio y ahorro potencial lado a lado para decidir con criterio técnico y financiero.</p>
+    <div class="gauge-row" id="heroStats"></div>
+  </div>
+</section>
+
+<div class="tab-bar-wrap">
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="comparativo">📊 Comparativo</button>
+    <button class="tab-btn admin-only" data-tab="real" id="tabRealBtn">🧾 Ejemplo real</button>
+  </div>
+</div>
+
+<div id="tab-comparativo" class="tab-panel active">
+  <div class="controls-wrap">
+    <div class="controls">
+      <div class="field search-field">
+        <label for="searchInput">Buscar</label>
+        <input type="search" id="searchInput" placeholder="Molécula, comercial o laboratorio…">
+      </div>
+      <div class="field">
+        <label for="tipoSelect">Grupo terapéutico</label>
+        <select id="tipoSelect"></select>
+      </div>
+      <div class="field">
+        <label>Orden</label>
+        <div class="toggle-group">
+          <button class="toggle-btn active" data-sort="impacto">Mayor impacto</button>
+          <button class="toggle-btn" data-sort="alfa">Alfabético</button>
+        </div>
+      </div>
+      <div class="field admin-only" id="adminFieldComparativo">
+        <label>&nbsp;</label>
+        <button class="upload-btn" id="uploadBtn" type="button">📎 Cargar Excel actualizado</button>
+        <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none">
+      </div>
+      <div class="upload-msg" id="uploadMsg"></div>
+      <div class="count-pill" id="countPill"></div>
+    </div>
+  </div>
+
+  <main id="main"></main>
+</div>
+
+<div id="tab-real" class="tab-panel">
+  <div class="real-toolbar">
+    <div class="field admin-only" id="adminFieldReal">
+      <label>&nbsp;</label>
+      <button class="upload-btn" id="pedidoUploadBtn" type="button">📎 Agregar pedido(s) (Excel)</button>
+      <input type="file" id="pedidoFileInput" accept=".xlsx,.xls" multiple style="display:none">
+    </div>
+    <label class="chk-label"><input type="checkbox" id="onlyMatchedChk"> Mostrar solo líneas identificadas en el detalle</label>
+    <button class="mini-btn danger admin-only" id="clearPedidosBtn" type="button">Vaciar todo</button>
+    <div class="upload-msg" id="pedidoUploadMsg"></div>
+  </div>
+
+  <div id="pedidoEmpty" class="empty-state">
+    <div class="display">Carga pedidos para proyectar el ahorro</div>
+    Sube uno o varios Excel de pedidos reales (de distintas granjas y meses — columnas Tipo, Descripción, Cantidad, Precio venta excl. IVA, e idealmente Granjas y Fecha envío) y te muestro el ahorro acumulado y una proyección por semestre y año.
+  </div>
+
+  <div id="pedidoResults" style="display:none;">
+    <div class="gauge-row real-summary" id="pedidoSummary"></div>
+
+    <div class="real-section-title">Pedidos cargados</div>
+    <div id="pedidosListWrap"></div>
+
+    <div class="real-section-title">Proyección de ahorro</div>
+    <div id="pedidoProjectionWrap"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="foot-inner">
+    <div>Fuente: comparativo interno de precios por laboratorio, mismo compuesto activo · Cercafe.<br>El <b>Valor /ml</b> se calcula así: Valor asociado ÷ presentación (número extraído de la celda, normalizando kg→g y Lt→ml ×1000 para que la comparación sea justa entre laboratorios). En Ejemplo real la comparación usa el <b>Valor asociado</b> (precio del frasco/presentación), para que sea comparable con el precio pagado en el pedido.</div>
+    <div>
+      Herramienta de apoyo a la decisión de compra técnica. Verificar disponibilidad y condiciones comerciales vigentes con cada laboratorio.
+      <span class="admin-only" id="adminFooterNote"><br>Para actualizar el comparativo usa <b>Cargar Excel actualizado</b>: detecta las columnas por su nombre (Grupo terapéutico, Molécula, Comercial, Nombre ERP, Laboratorio, Presentación, Dosis práctica, Valor asociado, Tiene costo tratamiento, Costo del tratamiento), así que funciona aunque cambie el orden o el formato de moneda. Si un mismo producto/laboratorio viene en más de una presentación, se muestran ambas como opciones independientes.</span>
+    </div>
+  </div>
+</footer>
+
+
+<script id="data-json" type="application/json">[
+ {
+  "tipo": "Antibiótico inyectable",
+  "molecula": "Amoxicilina",
+  "n": 3,
+  "items": [
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Amoxicilina",
+    "concentracion": 0.15,
+    "comercial": "Amoxisol",
+    "nombre_erp": "AMOXISOL L.A INY X 100 ML",
+    "laboratorio": "Bayer",
+    "presentacion": "100 ml",
+    "dosis_terapeutica": "15mg/kg",
+    "dosis_practica": "1ml/10kg",
+    "valor_cercafe": 83500.0,
+    "valor": 89784.0,
+    "valor_unidad_archivo": 898.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 8978.4,
+    "valor_unit": 897.84,
+    "precio_comp": 897.84,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Amoxicilina",
+    "concentracion": 0.15,
+    "comercial": "AMX LA",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "Pisa",
+    "presentacion": "100ml",
+    "dosis_terapeutica": "15mg/kg",
+    "dosis_practica": "1ml/10kg",
+    "valor_cercafe": 83500.0,
+    "valor": 92025.35,
+    "valor_unidad_archivo": 920.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 9202.54,
+    "valor_unit": 920.2535,
+    "precio_comp": 920.25,
+    "unidad": "unit",
+    "dif_money": 22.41,
+    "dif_pct": 2.5,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Amoxicilina",
+    "concentracion": 0.15,
+    "comercial": "Vetrimoxin",
+    "nombre_erp": "VETRIMOXIN LA X 100 ML",
+    "laboratorio": "Ceva",
+    "presentacion": "100ml",
+    "dosis_terapeutica": "15mg/kg",
+    "dosis_practica": "1ml/10kg",
+    "valor_cercafe": 86600.0,
+    "valor": 95911.54,
+    "valor_unidad_archivo": 959.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 9591.15,
+    "valor_unit": 959.1153999999999,
+    "precio_comp": 959.12,
+    "unidad": "unit",
+    "dif_money": 61.28,
+    "dif_pct": 6.8,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Antibiótico inyectable",
+  "molecula": "Ceftiofur",
+  "n": 4,
+  "items": [
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Ceftiofur",
+    "concentracion": 0.05,
+    "comercial": "Tiobac",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "VICAR",
+    "presentacion": "100 ml",
+    "dosis_terapeutica": "3-5mg/kg",
+    "dosis_practica": "1,5-2,5ml/25kg",
+    "valor_cercafe": 62650.0,
+    "valor": 72273.04,
+    "valor_unidad_archivo": 723.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 4336.38,
+    "valor_unit": 722.7303999999999,
+    "precio_comp": 722.73,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Ceftiofur",
+    "concentracion": 0.05,
+    "comercial": "Actynoxel RTU",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "Pisa",
+    "presentacion": "100 ml",
+    "dosis_terapeutica": "3-5mg/kg",
+    "dosis_practica": "1-3ml/50kg",
+    "valor_cercafe": 71000.0,
+    "valor": 78249.1,
+    "valor_unidad_archivo": 782.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 1564.98,
+    "valor_unit": 782.4910000000001,
+    "precio_comp": 782.49,
+    "unidad": "unit",
+    "dif_money": 59.76,
+    "dif_pct": 8.3,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Ceftiofur",
+    "concentracion": 0.05,
+    "comercial": "Ceftiofur LPU",
+    "nombre_erp": "CEFTIOFUR X 100 ML",
+    "laboratorio": "Over",
+    "presentacion": "100 ml",
+    "dosis_terapeutica": "3-5mg/kg",
+    "dosis_practica": "1ml/10-17kg",
+    "valor_cercafe": 118718.0,
+    "valor": 131483.62,
+    "valor_unidad_archivo": 1315.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 9739.53,
+    "valor_unit": 1314.8362,
+    "precio_comp": 1314.84,
+    "unidad": "unit",
+    "dif_money": 592.11,
+    "dif_pct": 81.9,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Ceftiofur",
+    "concentracion": 0.1,
+    "comercial": "Lactofur",
+    "nombre_erp": "LACTOFUR X 100 ML",
+    "laboratorio": "Ourifino",
+    "presentacion": "100 ml",
+    "dosis_terapeutica": "3-5mg/kg",
+    "dosis_practica": "1ml/20kg",
+    "valor_cercafe": 172300.0,
+    "valor": 193614.25,
+    "valor_unidad_archivo": 1936.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 9680.71,
+    "valor_unit": 1936.1425,
+    "precio_comp": 1936.14,
+    "unidad": "unit",
+    "dif_money": 1213.41,
+    "dif_pct": 167.9,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Antibiótico inyectable",
+  "molecula": "Enrofloxacina",
+  "n": 2,
+  "items": [
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Enrofloxacina",
+    "concentracion": 0.1,
+    "comercial": "Fortius",
+    "nombre_erp": "FORTIUS L.A X 100 ML",
+    "laboratorio": "virbac",
+    "presentacion": "100 ml",
+    "dosis_terapeutica": "5-7,5mg/kg",
+    "dosis_practica": "3ml/40kg",
+    "valor_cercafe": 116918.0,
+    "valor": 111918.77,
+    "valor_unidad_archivo": 1119.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 8393.91,
+    "valor_unit": 1119.1877,
+    "precio_comp": 1119.19,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Enrofloxacina",
+    "concentracion": 0.15,
+    "comercial": "Quinocalf",
+    "nombre_erp": "QUINOCALF 15% X 100 ML",
+    "laboratorio": "California",
+    "presentacion": "100 ml",
+    "dosis_terapeutica": "5-7,5mg/kg",
+    "dosis_practica": "1ml/20kg",
+    "valor_cercafe": 159522.0,
+    "valor": 176674.87,
+    "valor_unidad_archivo": 1767.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 8833.74,
+    "valor_unit": 1766.7486999999999,
+    "precio_comp": 1766.75,
+    "unidad": "unit",
+    "dif_money": 647.56,
+    "dif_pct": 57.9,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Antibiótico inyectable",
+  "molecula": "Florfenicol",
+  "n": 4,
+  "items": [
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Florfenicol",
+    "concentracion": 0.3,
+    "comercial": "Flortifen",
+    "nombre_erp": "FLORTIFEN INY X 100 ML",
+    "laboratorio": "VICAR",
+    "presentacion": "250 ml",
+    "dosis_terapeutica": "15mg/kg",
+    "dosis_practica": "1ml/15kg",
+    "valor_cercafe": 116346.0,
+    "valor": 124490.0,
+    "valor_unidad_archivo": 498.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 3319.73,
+    "valor_unit": 497.96,
+    "precio_comp": 497.96,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Florfenicol",
+    "concentracion": 0.3,
+    "comercial": "Flortifen",
+    "nombre_erp": "FLORTIFEN INY X 100 ML",
+    "laboratorio": "VICAR",
+    "presentacion": "100 ml",
+    "dosis_terapeutica": "15mg/kg",
+    "dosis_practica": "1ml/15kg",
+    "valor_cercafe": 59281.0,
+    "valor": 68386.85,
+    "valor_unidad_archivo": 684.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 4559.12,
+    "valor_unit": 683.8685,
+    "precio_comp": 683.87,
+    "unidad": "unit",
+    "dif_money": 185.91,
+    "dif_pct": 37.3,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Florfenicol",
+    "concentracion": 0.3,
+    "comercial": "Florfenicol 300",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "Over",
+    "presentacion": "100 ml",
+    "dosis_terapeutica": "15mg/kg",
+    "dosis_practica": "1ml/15kg",
+    "valor_cercafe": 99769.0,
+    "valor": 102762.07,
+    "valor_unidad_archivo": 1028.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 6850.8,
+    "valor_unit": 1027.6207000000002,
+    "precio_comp": 1027.62,
+    "unidad": "unit",
+    "dif_money": 529.66,
+    "dif_pct": 106.4,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Florfenicol",
+    "concentracion": 0.3,
+    "comercial": "Nuflor",
+    "nombre_erp": "NUFLOR 100 CC",
+    "laboratorio": "MSD",
+    "presentacion": "100 ml",
+    "dosis_terapeutica": "15mg/kg",
+    "dosis_practica": "1ml/20kg",
+    "valor_cercafe": 320859.0,
+    "valor": 345009.0,
+    "valor_unidad_archivo": 3450.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 17250.45,
+    "valor_unit": 3450.09,
+    "precio_comp": 3450.09,
+    "unidad": "unit",
+    "dif_money": 2952.13,
+    "dif_pct": 592.8,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Antibiótico inyectable",
+  "molecula": "Oxitetraciclina",
+  "n": 4,
+  "items": [
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Oxitetraciclina",
+    "concentracion": 0.2,
+    "comercial": "Panamicina",
+    "nombre_erp": "PANAMICINA X 500 ML",
+    "laboratorio": "VICAR",
+    "presentacion": "500ml",
+    "dosis_terapeutica": "20mg/kg",
+    "dosis_practica": "1ml/10kg",
+    "valor_cercafe": 77863.0,
+    "valor": 87206.0,
+    "valor_unidad_archivo": 174.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 1744.12,
+    "valor_unit": 174.412,
+    "precio_comp": 174.41,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Oxitetraciclina",
+    "concentracion": 0.2,
+    "comercial": "Panamicina",
+    "nombre_erp": "PANAMICINA X 250 ML",
+    "laboratorio": "VICAR",
+    "presentacion": "250 ml",
+    "dosis_terapeutica": "20mg/kg",
+    "dosis_practica": "1ml/10kg",
+    "valor_cercafe": 59945.0,
+    "valor": 69152.14,
+    "valor_unidad_archivo": 277.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 2766.09,
+    "valor_unit": 276.60856,
+    "precio_comp": 276.61,
+    "unidad": "unit",
+    "dif_money": 102.2,
+    "dif_pct": 58.6,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Oxitetraciclina",
+    "concentracion": 0.2,
+    "comercial": "Overbiotic LA",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "Over",
+    "presentacion": "250 ml",
+    "dosis_terapeutica": "20mg/kg",
+    "dosis_practica": "1ml/10kg",
+    "valor_cercafe": 94825.0,
+    "valor": 97669.75,
+    "valor_unidad_archivo": 391.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 3906.79,
+    "valor_unit": 390.679,
+    "precio_comp": 390.68,
+    "unidad": "unit",
+    "dif_money": 216.27,
+    "dif_pct": 124.0,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Oxitetraciclina",
+    "concentracion": 0.2,
+    "comercial": "Terramicina",
+    "nombre_erp": "TERRAMICINA L.A X 250 ML",
+    "laboratorio": "Zoetis",
+    "presentacion": "250 ml",
+    "dosis_terapeutica": "20mg/kg",
+    "dosis_practica": "1ml/10kg",
+    "valor_cercafe": 224900.0,
+    "valor": 249082.84,
+    "valor_unidad_archivo": 996.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 9963.31,
+    "valor_unit": 996.33136,
+    "precio_comp": 996.33,
+    "unidad": "unit",
+    "dif_money": 821.92,
+    "dif_pct": 471.3,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Antibiótico inyectable",
+  "molecula": "Penicilina + Estreptomicina + Flumetazona",
+  "n": 1,
+  "items": [
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Penicilina + Estreptomicina + Flumetazona",
+    "concentracion": "6000000 UI",
+    "comercial": "Vicarflucina",
+    "nombre_erp": "VICARFLUCINA 6 MILLONES",
+    "laboratorio": "VICAR",
+    "presentacion": "100 ml",
+    "dosis_terapeutica": "8mg/kg",
+    "dosis_practica": "1ml/20kg",
+    "valor_cercafe": 32075.0,
+    "valor": 37001.72,
+    "valor_unidad_archivo": 370.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 1850.09,
+    "valor_unit": 370.0172,
+    "precio_comp": 370.02,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   }
+  ]
+ },
+ {
+  "tipo": "Antibiótico inyectable",
+  "molecula": "Penicilina + Estreptomicina + Meloxicam",
+  "n": 1,
+  "items": [
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Penicilina + Estreptomicina + Meloxicam",
+    "concentracion": "5000000 UI",
+    "comercial": "Overpen forte",
+    "nombre_erp": "OVERPEN FORTE X 50 ML",
+    "laboratorio": "Over",
+    "presentacion": "100 ml",
+    "dosis_terapeutica": "8mg/kg",
+    "dosis_practica": "1ml/10kg",
+    "valor_cercafe": 57111.0,
+    "valor": 58824.33,
+    "valor_unidad_archivo": 588.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 5882.43,
+    "valor_unit": 588.2433,
+    "precio_comp": 588.24,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   }
+  ]
+ },
+ {
+  "tipo": "Antibiótico inyectable",
+  "molecula": "Penicilina + Estreptomicina + Triamcinolona",
+  "n": 1,
+  "items": [
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Penicilina + Estreptomicina + Triamcinolona",
+    "concentracion": "6000000 UI",
+    "comercial": "Vetadicrysticina",
+    "nombre_erp": "VETADECRYSTICINA X 6",
+    "laboratorio": "Novartis",
+    "presentacion": "100 ml",
+    "dosis_terapeutica": "8mg/kg",
+    "dosis_practica": "1ml/20kg",
+    "valor_cercafe": 67399.0,
+    "valor": 71656.07,
+    "valor_unidad_archivo": 717.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 3582.8,
+    "valor_unit": 716.5607000000001,
+    "precio_comp": 716.56,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   }
+  ]
+ },
+ {
+  "tipo": "Antibiótico inyectable",
+  "molecula": "Penicilinas G",
+  "n": 2,
+  "items": [
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Penicilinas G",
+    "concentracion": "6000000 UI",
+    "comercial": "Vetapen",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "VICAR",
+    "presentacion": "100 ml",
+    "dosis_terapeutica": "20000-40000UI/kg",
+    "dosis_practica": "1ml/15kg",
+    "valor_cercafe": 20100.0,
+    "valor": 23649.83,
+    "valor_unidad_archivo": 236.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 1576.66,
+    "valor_unit": 236.49830000000003,
+    "precio_comp": 236.5,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Penicilinas G",
+    "concentracion": "6000000 UI",
+    "comercial": "Tripen",
+    "nombre_erp": "TRIPEN L.A 9 UI",
+    "laboratorio": "Vecol",
+    "presentacion": "100 ml",
+    "dosis_terapeutica": "20000-40000UI/kg",
+    "dosis_practica": "1ml/10kg",
+    "valor_cercafe": 24130.0,
+    "valor": 26423.62,
+    "valor_unidad_archivo": 264.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 2642.36,
+    "valor_unit": 264.2362,
+    "precio_comp": 264.24,
+    "unidad": "unit",
+    "dif_money": 27.74,
+    "dif_pct": 11.7,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Antibiótico inyectable",
+  "molecula": "Tilosina",
+  "n": 4,
+  "items": [
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Tilosina",
+    "concentracion": 0.2,
+    "comercial": "Tilovet",
+    "nombre_erp": "TILOVET X 250 ML",
+    "laboratorio": "VICAR",
+    "presentacion": "250ml",
+    "dosis_terapeutica": "10mg/kg",
+    "dosis_practica": "1ml/10-20kg",
+    "valor_cercafe": 67522.0,
+    "valor": 76299.0,
+    "valor_unidad_archivo": 305.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 2034.64,
+    "valor_unit": 305.196,
+    "precio_comp": 305.2,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Tilosina",
+    "concentracion": 0.2,
+    "comercial": "Tilovet",
+    "nombre_erp": "TILOVET X 100 ML",
+    "laboratorio": "VICAR",
+    "presentacion": "100 ml",
+    "dosis_terapeutica": "10mg/kg",
+    "dosis_practica": "1ml/10-20kg",
+    "valor_cercafe": 27470.0,
+    "valor": 31688.98,
+    "valor_unidad_archivo": 317.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 2112.6,
+    "valor_unit": 316.8898,
+    "precio_comp": 316.89,
+    "unidad": "unit",
+    "dif_money": 11.69,
+    "dif_pct": 3.8,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Tilosina",
+    "concentracion": 0.2,
+    "comercial": "Tilosina ",
+    "nombre_erp": "TILOSINA 20% 100 ML",
+    "laboratorio": "Over",
+    "presentacion": "100 ml",
+    "dosis_terapeutica": "10mg/kg",
+    "dosis_practica": "1ml/20kg",
+    "valor_cercafe": 41853.0,
+    "valor": 39119.4,
+    "valor_unidad_archivo": 391.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 1955.97,
+    "valor_unit": 391.194,
+    "precio_comp": 391.19,
+    "unidad": "unit",
+    "dif_money": 85.99,
+    "dif_pct": 28.2,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Tilosina",
+    "concentracion": 0.2,
+    "comercial": "Tylan",
+    "nombre_erp": "TYLAN 200 INY X 100 ML",
+    "laboratorio": "Elanco",
+    "presentacion": "100 ml",
+    "dosis_terapeutica": "10mg/kg",
+    "dosis_practica": "1ml/20kg",
+    "valor_cercafe": 77426.0,
+    "valor": 74351.58,
+    "valor_unidad_archivo": 744.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 3717.58,
+    "valor_unit": 743.5158,
+    "precio_comp": 743.52,
+    "unidad": "unit",
+    "dif_money": 438.32,
+    "dif_pct": 143.6,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Antibiótico inyectable",
+  "molecula": "Trimetoprim + sulfa",
+  "n": 3,
+  "items": [
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Trimetoprim + sulfa",
+    "concentracion": 0.48,
+    "comercial": "Trimebac",
+    "nombre_erp": "TRIMEBAC X 100 ML",
+    "laboratorio": "VICAR",
+    "presentacion": "100 ml",
+    "dosis_terapeutica": "30mg/kg",
+    "dosis_practica": "1ml/30kg",
+    "valor_cercafe": 34336.0,
+    "valor": 39609.68,
+    "valor_unidad_archivo": 396.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 1320.32,
+    "valor_unit": 396.09680000000003,
+    "precio_comp": 396.1,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Trimetoprim + sulfa",
+    "concentracion": 0.48,
+    "comercial": "Trimediazina",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "V.M",
+    "presentacion": "100 ml",
+    "dosis_terapeutica": "30mg/kg",
+    "dosis_practica": "1ml/30kg",
+    "valor_cercafe": 58565.0,
+    "valor": 64543.92,
+    "valor_unidad_archivo": 645.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 2151.46,
+    "valor_unit": 645.4392,
+    "precio_comp": 645.44,
+    "unidad": "unit",
+    "dif_money": 249.34,
+    "dif_pct": 62.9,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Trimetoprim + sulfa",
+    "concentracion": 0.24,
+    "comercial": "Borgal",
+    "nombre_erp": "BORGAL X 100 ML",
+    "laboratorio": "MSD",
+    "presentacion": "100 ml",
+    "dosis_terapeutica": "30mg/kg",
+    "dosis_practica": "1,5ml/25kg",
+    "valor_cercafe": 130970.0,
+    "valor": 124702.1,
+    "valor_unidad_archivo": 1247.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 7482.13,
+    "valor_unit": 1247.021,
+    "precio_comp": 1247.02,
+    "unidad": "unit",
+    "dif_money": 850.92,
+    "dif_pct": 214.8,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Antibiótico inyectable",
+  "molecula": "Tulatromocina",
+  "n": 3,
+  "items": [
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Tulatromocina",
+    "concentracion": 0.1,
+    "comercial": "Tulatron",
+    "nombre_erp": "TULATROM X 100ML",
+    "laboratorio": "DQSA",
+    "presentacion": "100 ml",
+    "dosis_terapeutica": "2,5mg/kg",
+    "dosis_practica": "1ml/40kg",
+    "valor_cercafe": 337577.0,
+    "valor": 356429.44,
+    "valor_unidad_archivo": 3564.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 8910.74,
+    "valor_unit": 3564.2944,
+    "precio_comp": 3564.29,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Tulatromocina",
+    "concentracion": 0.1,
+    "comercial": "Tulaven",
+    "nombre_erp": "TULAVEN X 100 ML",
+    "laboratorio": "Ceva",
+    "presentacion": "100 ml",
+    "dosis_terapeutica": "2,5mg/kg",
+    "dosis_practica": "1ml/40kg",
+    "valor_cercafe": 426300.0,
+    "valor": 472138.61,
+    "valor_unidad_archivo": 4721.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 11803.47,
+    "valor_unit": 4721.3861,
+    "precio_comp": 4721.39,
+    "unidad": "unit",
+    "dif_money": 1157.1,
+    "dif_pct": 32.5,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Antibiótico inyectable",
+    "molecula": "Tulatromocina",
+    "concentracion": 0.1,
+    "comercial": "Draxxin",
+    "nombre_erp": "DRAXXIN INY X 100 ML",
+    "laboratorio": "Zoetis",
+    "presentacion": "100 ml",
+    "dosis_terapeutica": "2,5mg/kg",
+    "dosis_practica": "1ml/40kg",
+    "valor_cercafe": 483400.0,
+    "valor": 535338.38,
+    "valor_unidad_archivo": 5353.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 13383.46,
+    "valor_unit": 5353.3838,
+    "precio_comp": 5353.38,
+    "unidad": "unit",
+    "dif_money": 1789.09,
+    "dif_pct": 50.2,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Antibiótico Soluble",
+  "molecula": "Amoxicilina",
+  "n": 3,
+  "items": [
+   {
+    "tipo": "Antibiótico Soluble",
+    "molecula": "Amoxicilina",
+    "concentracion": 0.5,
+    "comercial": "Extimox",
+    "nombre_erp": "EXTIMOX 50 X KG",
+    "laboratorio": "Ilender",
+    "presentacion": "1000gr",
+    "dosis_terapeutica": "15mg/kg",
+    "dosis_practica": "20mg/kgPV",
+    "valor_cercafe": 150900.0,
+    "valor": 167537.74,
+    "valor_unidad_archivo": 168.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 167.53773999999999,
+    "precio_comp": 167.54,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Antibiótico Soluble",
+    "molecula": "Amoxicilina",
+    "concentracion": 0.5,
+    "comercial": "amoxiphar",
+    "nombre_erp": "AMOXIPHAR 1 KG",
+    "laboratorio": "Pharvet",
+    "presentacion": "1000gr",
+    "dosis_terapeutica": "15mg/kg",
+    "dosis_practica": "1g/5lt",
+    "valor_cercafe": 160000.0,
+    "valor": 176336.0,
+    "valor_unidad_archivo": 176.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 176.336,
+    "precio_comp": 176.34,
+    "unidad": "unit",
+    "dif_money": 8.8,
+    "dif_pct": 5.3,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Antibiótico Soluble",
+    "molecula": "Amoxicilina",
+    "concentracion": 0.5,
+    "comercial": "Amoxavet",
+    "nombre_erp": "AMOXILICINA X KG",
+    "laboratorio": "American veterinaria ",
+    "presentacion": "1000gr",
+    "dosis_terapeutica": "15mg/kg",
+    "dosis_practica": "1g/lt",
+    "valor_cercafe": 170000.0,
+    "valor": 188279.88,
+    "valor_unidad_archivo": 188.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 188.27988,
+    "precio_comp": 188.28,
+    "unidad": "unit",
+    "dif_money": 20.74,
+    "dif_pct": 12.4,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Antibiótico Soluble",
+  "molecula": "Ciprofloxacina",
+  "n": 3,
+  "items": [
+   {
+    "tipo": "Antibiótico Soluble",
+    "molecula": "Ciprofloxacina",
+    "concentracion": 0.3,
+    "comercial": "Ciproxagua",
+    "nombre_erp": "CIPROX AGUA X 1 KG",
+    "laboratorio": "Biotecno",
+    "presentacion": "5000gr",
+    "dosis_terapeutica": "5-10mg/kg",
+    "dosis_practica": "10mg/kgPV",
+    "valor_cercafe": 375000.0,
+    "valor": 415321.75,
+    "valor_unidad_archivo": 83.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 83.06435,
+    "precio_comp": 83.06,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Antibiótico Soluble",
+    "molecula": "Ciprofloxacina",
+    "concentracion": 0.25,
+    "comercial": "Ciprophar",
+    "nombre_erp": "CIPROPHAR X KG",
+    "laboratorio": "Pharvet",
+    "presentacion": "1000gr",
+    "dosis_terapeutica": "5-10mg/kg",
+    "dosis_practica": "1g/5lt",
+    "valor_cercafe": 86900.0,
+    "valor": 96243.2,
+    "valor_unidad_archivo": 96.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 96.2432,
+    "precio_comp": 96.24,
+    "unidad": "unit",
+    "dif_money": 13.18,
+    "dif_pct": 15.9,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Antibiótico Soluble",
+    "molecula": "Ciprofloxacina",
+    "concentracion": 0.2,
+    "comercial": "Ciflox",
+    "nombre_erp": "CIFLOX 200 POLVO SOLUBLE UD X 250 G",
+    "laboratorio": "Carval",
+    "presentacion": "250gr",
+    "dosis_terapeutica": "5-10mg/kg",
+    "dosis_practica": "1g/4lt",
+    "valor_cercafe": 23700.0,
+    "valor": 26248.52,
+    "valor_unidad_archivo": 105.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 104.99408,
+    "precio_comp": 104.99,
+    "unidad": "unit",
+    "dif_money": 21.93,
+    "dif_pct": 26.4,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Antibiótico Soluble",
+  "molecula": "Florfenicol",
+  "n": 2,
+  "items": [
+   {
+    "tipo": "Antibiótico Soluble",
+    "molecula": "Florfenicol",
+    "concentracion": 0.05,
+    "comercial": "Florcap",
+    "nombre_erp": "FLORCAP 40% X 5 KG",
+    "laboratorio": "Pharvet",
+    "presentacion": "1000gr",
+    "dosis_terapeutica": "15mg/kg",
+    "dosis_practica": "10mg/kgPV",
+    "valor_cercafe": 44800.0,
+    "valor": 46144.0,
+    "valor_unidad_archivo": 46.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 46.144,
+    "precio_comp": 46.14,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Antibiótico Soluble",
+    "molecula": "Florfenicol",
+    "concentracion": 0.02,
+    "comercial": "Feniflor",
+    "nombre_erp": "FENIFLOR ORAL X 500 G",
+    "laboratorio": "Alura",
+    "presentacion": "500gr",
+    "dosis_terapeutica": "15mg/kg",
+    "dosis_practica": "75mg/kgPV",
+    "valor_cercafe": 51250.0,
+    "valor": 56760.21,
+    "valor_unidad_archivo": 114.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 113.52042,
+    "precio_comp": 113.52,
+    "unidad": "unit",
+    "dif_money": 67.38,
+    "dif_pct": 146.0,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Anelgésico oral",
+  "molecula": "Acido Acetilsalicico",
+  "n": 4,
+  "items": [
+   {
+    "tipo": "Anelgésico oral",
+    "molecula": "Acido Acetilsalicico",
+    "concentracion": " ",
+    "comercial": "Isoterm",
+    "nombre_erp": "ISOTERM X 10 KG",
+    "laboratorio": "Nutrexcol",
+    "presentacion": "10000gr",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "1g/lt",
+    "valor_cercafe": 186000.0,
+    "valor": 206000.0,
+    "valor_unidad_archivo": 21.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 20.6,
+    "precio_comp": 20.6,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Anelgésico oral",
+    "molecula": "Acido Acetilsalicico",
+    "concentracion": " ",
+    "comercial": "Electrodex",
+    "nombre_erp": "ELECTRODEX X 10 KG",
+    "laboratorio": "Pisa",
+    "presentacion": "10000gr",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "1g/lt",
+    "valor_cercafe": 306785.0,
+    "valor": 442385.0,
+    "valor_unidad_archivo": 44.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 44.2385,
+    "precio_comp": 44.24,
+    "unidad": "unit",
+    "dif_money": 23.64,
+    "dif_pct": 114.8,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Anelgésico oral",
+    "molecula": "Acido Acetilsalicico",
+    "concentracion": " ",
+    "comercial": "Gram up",
+    "nombre_erp": "GRAM UP X KILO",
+    "laboratorio": "Basicfarm",
+    "presentacion": "1000gr",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "1g/lt",
+    "valor_cercafe": 44600.0,
+    "valor": 49395.71,
+    "valor_unidad_archivo": 49.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 49.39571,
+    "precio_comp": 49.4,
+    "unidad": "unit",
+    "dif_money": 28.8,
+    "dif_pct": 139.8,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Anelgésico oral",
+    "molecula": "Acido Acetilsalicico",
+    "concentracion": " ",
+    "comercial": "AAA",
+    "nombre_erp": "TRIPLE AAA X 500 G",
+    "laboratorio": "Bioara ",
+    "presentacion": "500gr",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "1g/lt",
+    "valor_cercafe": 84000.0,
+    "valor": 93028.57,
+    "valor_unidad_archivo": 186.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 186.05714,
+    "precio_comp": 186.06,
+    "unidad": "unit",
+    "dif_money": 165.46,
+    "dif_pct": 803.2,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Hidratantes",
+  "molecula": "Electrolitos solubles",
+  "n": 2,
+  "items": [
+   {
+    "tipo": "Hidratantes",
+    "molecula": "Electrolitos solubles",
+    "concentracion": " ",
+    "comercial": "Hidrexcol",
+    "nombre_erp": "HYDREXCOL X 1 KG",
+    "laboratorio": "Nutrexcol",
+    "presentacion": "1000gr",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "1g/lt",
+    "valor_cercafe": 45000.0,
+    "valor": 48387.0,
+    "valor_unidad_archivo": 48.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 48.387,
+    "precio_comp": 48.39,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Hidratantes",
+    "molecula": "Electrolitos solubles",
+    "concentracion": " ",
+    "comercial": "HI-2",
+    "nombre_erp": "HI-2 X 500 G",
+    "laboratorio": "Bioara ",
+    "presentacion": "500 gr",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "1g/lt",
+    "valor_cercafe": 89000.0,
+    "valor": 98568.94,
+    "valor_unidad_archivo": 197.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 197.13788,
+    "precio_comp": 197.14,
+    "unidad": "unit",
+    "dif_money": 148.75,
+    "dif_pct": 307.4,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Lactoreemplazador",
+  "molecula": "Lactoreemplazador",
+  "n": 3,
+  "items": [
+   {
+    "tipo": "Lactoreemplazador",
+    "molecula": "Lactoreemplazador",
+    "concentracion": " ",
+    "comercial": "Piglac",
+    "nombre_erp": "PIG LAG X 10 KG",
+    "laboratorio": "Liptosa",
+    "presentacion": "10000gr",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "200g/lt",
+    "valor_cercafe": 195456.0,
+    "valor": 214361.54,
+    "valor_unidad_archivo": 21.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 21.436154000000002,
+    "precio_comp": 21.44,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Lactoreemplazador",
+    "molecula": "Lactoreemplazador",
+    "concentracion": " ",
+    "comercial": "Lactapig",
+    "nombre_erp": "LACTAPIG X 20 KG",
+    "laboratorio": "Ingaso",
+    "presentacion": "20000gr",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "150-300g/lt",
+    "valor_cercafe": 514700.0,
+    "valor": 570043.2,
+    "valor_unidad_archivo": 29.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 28.502159999999996,
+    "precio_comp": 28.5,
+    "unidad": "unit",
+    "dif_money": 7.06,
+    "dif_pct": 32.9,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Lactoreemplazador",
+    "molecula": "Lactoreemplazador",
+    "concentracion": " ",
+    "comercial": "Estimilk",
+    "nombre_erp": "ESTIMILK X 10 KG",
+    "laboratorio": "Vetbio",
+    "presentacion": "10000gr",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "200g/lt",
+    "valor_cercafe": 277888.0,
+    "valor": 291615.66,
+    "valor_unidad_archivo": 29.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 29.161565999999997,
+    "precio_comp": 29.16,
+    "unidad": "unit",
+    "dif_money": 7.72,
+    "dif_pct": 36.0,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Vitamina",
+  "molecula": "Calcio, Fósforo, Magnesio, Selenio",
+  "n": 1,
+  "items": [
+   {
+    "tipo": "Vitamina",
+    "molecula": "Calcio, Fósforo, Magnesio, Selenio",
+    "concentracion": " ",
+    "comercial": "calfosvit",
+    "nombre_erp": "CALFOSVIT SELENIO INY X 500 ML",
+    "laboratorio": "california",
+    "presentacion": "500ml",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "1ml/20kg",
+    "valor_cercafe": 172772.0,
+    "valor": 162761.63,
+    "valor_unidad_archivo": 326.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 1627.62,
+    "valor_unit": 325.52326,
+    "precio_comp": 325.52,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   }
+  ]
+ },
+ {
+  "tipo": "Vitamina",
+  "molecula": "Complejo B",
+  "n": 1,
+  "items": [
+   {
+    "tipo": "Vitamina",
+    "molecula": "Complejo B",
+    "concentracion": " ",
+    "comercial": "Over-B Complex",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "Over-Agralba",
+    "presentacion": "500ml",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "1ml/50kg",
+    "valor_cercafe": 142702.0,
+    "valor": 165274.83,
+    "valor_unidad_archivo": 331.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 661.1,
+    "valor_unit": 330.54965999999996,
+    "precio_comp": 330.55,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   }
+  ]
+ },
+ {
+  "tipo": "Vitamina",
+  "molecula": "Complejo B + Cacodilato",
+  "n": 1,
+  "items": [
+   {
+    "tipo": "Vitamina",
+    "molecula": "Complejo B + Cacodilato",
+    "concentracion": " ",
+    "comercial": "Cacodil B12",
+    "nombre_erp": "CACODIL B12 X 250 ML",
+    "laboratorio": "VICAR",
+    "presentacion": "500ml",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "1ml/40kg",
+    "valor_cercafe": 159975.0,
+    "valor": 171173.0,
+    "valor_unidad_archivo": 342.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 855.87,
+    "valor_unit": 342.346,
+    "precio_comp": 342.35,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   }
+  ]
+ },
+ {
+  "tipo": "Vitamina",
+  "molecula": "Fosforo, Selenio, Yodo, Zinc",
+  "n": 1,
+  "items": [
+   {
+    "tipo": "Vitamina",
+    "molecula": "Fosforo, Selenio, Yodo, Zinc",
+    "concentracion": " ",
+    "comercial": "Selofos",
+    "nombre_erp": "SELOFOS X 250 ML",
+    "laboratorio": "VICAR",
+    "presentacion": "500ml",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "1ml/20kg",
+    "valor_cercafe": 116740.0,
+    "valor": 134671.47,
+    "valor_unidad_archivo": 269.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 1346.71,
+    "valor_unit": 269.34294,
+    "precio_comp": 269.34,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   }
+  ]
+ },
+ {
+  "tipo": "Vitamina",
+  "molecula": "Fósforo, Magnesio, Potasio, Cobre, Selenio",
+  "n": 1,
+  "items": [
+   {
+    "tipo": "Vitamina",
+    "molecula": "Fósforo, Magnesio, Potasio, Cobre, Selenio",
+    "concentracion": " ",
+    "comercial": "fosfosan",
+    "nombre_erp": "FOSFOSAN X 500 ML",
+    "laboratorio": "virbac",
+    "presentacion": "500ml",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "5ml",
+    "valor_cercafe": 218414.0,
+    "valor": 241899.93,
+    "valor_unidad_archivo": 484.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 2419.0,
+    "valor_unit": 483.79985999999997,
+    "precio_comp": 483.8,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   }
+  ]
+ },
+ {
+  "tipo": "Vitamina",
+  "molecula": "Gluconato de calcio",
+  "n": 3,
+  "items": [
+   {
+    "tipo": "Vitamina",
+    "molecula": "Gluconato de calcio",
+    "concentracion": 0.2,
+    "comercial": "Gluconato de calcio",
+    "nombre_erp": "GLUCONATO DE CALCIO X 250",
+    "laboratorio": "Vecol",
+    "presentacion": "500ml",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "1ml/kg",
+    "valor_cercafe": 21700.0,
+    "valor": 22482.84,
+    "valor_unidad_archivo": 45.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 44.96568,
+    "precio_comp": 44.97,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Vitamina",
+    "molecula": "Gluconato de calcio",
+    "concentracion": 0.2,
+    "comercial": "Revical",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "Over",
+    "presentacion": "500ml",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "1ml/kg",
+    "valor_cercafe": 38687.0,
+    "valor": 39847.61,
+    "valor_unidad_archivo": 80.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 79.69522,
+    "precio_comp": 79.7,
+    "unidad": "unit",
+    "dif_money": 34.73,
+    "dif_pct": 77.2,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Vitamina",
+    "molecula": "Gluconato de calcio",
+    "concentracion": 0.2,
+    "comercial": "Gluconato de calcio",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "VICAR",
+    "presentacion": "500ml",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "1ml/kg",
+    "valor_cercafe": 34945.0,
+    "valor": 40312.14,
+    "valor_unidad_archivo": 81.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 80.62428,
+    "precio_comp": 80.62,
+    "unidad": "unit",
+    "dif_money": 35.65,
+    "dif_pct": 79.3,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Vitamina",
+  "molecula": "Hierro",
+  "n": 1,
+  "items": [
+   {
+    "tipo": "Vitamina",
+    "molecula": "Hierro",
+    "concentracion": 0.2,
+    "comercial": "Ferriton",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "Pisa",
+    "presentacion": "100ml",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "1ml",
+    "valor_cercafe": 37300.0,
+    "valor": 38419.0,
+    "valor_unidad_archivo": 384.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 384.19,
+    "precio_comp": 384.19,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   }
+  ]
+ },
+ {
+  "tipo": "Vitamina",
+  "molecula": "Hierro + Vit. B12",
+  "n": 2,
+  "items": [
+   {
+    "tipo": "Vitamina",
+    "molecula": "Hierro + Vit. B12",
+    "concentracion": 0.1,
+    "comercial": "Ferrex",
+    "nombre_erp": "FERREX B12 20% X 100 ML",
+    "laboratorio": "VICAR",
+    "presentacion": "100ml",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "2ml",
+    "valor_cercafe": 27112.0,
+    "valor": 32114.37,
+    "valor_unidad_archivo": 321.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 321.14369999999997,
+    "precio_comp": 321.14,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Vitamina",
+    "molecula": "Hierro + Vit. B12",
+    "concentracion": 0.2,
+    "comercial": "Bakal",
+    "nombre_erp": "BAKAL B12 X 100 ML",
+    "laboratorio": "Kyrovet",
+    "presentacion": "100ml",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "1ml",
+    "valor_cercafe": 37469.0,
+    "valor": 41497.67,
+    "valor_unidad_archivo": 415.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 414.9767,
+    "precio_comp": 414.98,
+    "unidad": "unit",
+    "dif_money": 93.84,
+    "dif_pct": 29.2,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Vitamina",
+  "molecula": "Vitamina A + E",
+  "n": 4,
+  "items": [
+   {
+    "tipo": "Vitamina",
+    "molecula": "Vitamina A + E",
+    "concentracion": " ",
+    "comercial": "Oversel ADE",
+    "nombre_erp": "OVERSEL ADE OVER X 500 ML",
+    "laboratorio": "Over",
+    "presentacion": "500ml",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "3-5ml",
+    "valor_cercafe": 152344.0,
+    "valor": 156914.32,
+    "valor_unidad_archivo": 314.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 313.82864,
+    "precio_comp": 313.83,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Vitamina",
+    "molecula": "Vitamina A + E",
+    "concentracion": " ",
+    "comercial": "Edo Vitamina",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "EDO",
+    "presentacion": "500ml",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "0,5-6 ml",
+    "valor_cercafe": 291388.0,
+    "valor": 300129.64,
+    "valor_unidad_archivo": 600.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 600.25928,
+    "precio_comp": 600.26,
+    "unidad": "unit",
+    "dif_money": 286.43,
+    "dif_pct": 91.3,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Vitamina",
+    "molecula": "Vitamina A + E",
+    "concentracion": " ",
+    "comercial": "Vitamina A + E",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "VICAR",
+    "presentacion": "250ml",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "0,5-3ml",
+    "valor_cercafe": 152468.0,
+    "valor": 175886.92,
+    "valor_unidad_archivo": 704.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 703.54768,
+    "precio_comp": 703.55,
+    "unidad": "unit",
+    "dif_money": 389.72,
+    "dif_pct": 124.2,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Vitamina",
+    "molecula": "Vitamina A + E",
+    "concentracion": " ",
+    "comercial": "Vitavet",
+    "nombre_erp": "VITAVET A-D-E X 500 ML",
+    "laboratorio": "Provet",
+    "presentacion": "500ml",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "0,5-3ml",
+    "valor_cercafe": 475000.0,
+    "valor": 467652.96,
+    "valor_unidad_archivo": 935.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 935.30592,
+    "precio_comp": 935.31,
+    "unidad": "unit",
+    "dif_money": 621.48,
+    "dif_pct": 198.0,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Antiinflamatorio",
+  "molecula": "Flunixin meglumine",
+  "n": 3,
+  "items": [
+   {
+    "tipo": "Antiinflamatorio",
+    "molecula": "Flunixin meglumine",
+    "concentracion": 0.05,
+    "comercial": "Napzin",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "Pisa",
+    "presentacion": "100ml",
+    "dosis_terapeutica": "2,2mg/kg",
+    "dosis_practica": "2ml/45kg",
+    "valor_cercafe": 65600.0,
+    "valor": 67568.0,
+    "valor_unidad_archivo": 676.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 3003.02,
+    "valor_unit": 675.68,
+    "precio_comp": 675.68,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Antiinflamatorio",
+    "molecula": "Flunixin meglumine",
+    "concentracion": 0.05,
+    "comercial": "Flunixina",
+    "nombre_erp": "FLUNIXINA X 50 ML",
+    "laboratorio": "Vecol",
+    "presentacion": "50ml",
+    "dosis_terapeutica": "2,2mg/kg",
+    "dosis_practica": "2ml/45kg",
+    "valor_cercafe": 43053.0,
+    "valor": 46717.71,
+    "valor_unidad_archivo": 934.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 4152.69,
+    "valor_unit": 934.3542,
+    "precio_comp": 934.35,
+    "unidad": "unit",
+    "dif_money": 258.67,
+    "dif_pct": 38.3,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Antiinflamatorio",
+    "molecula": "Flunixin meglumine",
+    "concentracion": 0.05,
+    "comercial": "Fadine A4 ",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "VICAR",
+    "presentacion": "50ml",
+    "dosis_terapeutica": "2,2mg/kg",
+    "dosis_practica": "2ml/45kg",
+    "valor_cercafe": 58590.0,
+    "valor": 67589.63,
+    "valor_unidad_archivo": 1352.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 6007.97,
+    "valor_unit": 1351.7926,
+    "precio_comp": 1351.79,
+    "unidad": "unit",
+    "dif_money": 676.11,
+    "dif_pct": 100.1,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Antiinflamatorio",
+  "molecula": "Ketoprofeno",
+  "n": 5,
+  "items": [
+   {
+    "tipo": "Antiinflamatorio",
+    "molecula": "Ketoprofeno",
+    "concentracion": 0.1,
+    "comercial": "Ketodol",
+    "nombre_erp": "KETODOL X 100 ML",
+    "laboratorio": "VICAR",
+    "presentacion": "100ml",
+    "dosis_terapeutica": "3mg/kg",
+    "dosis_practica": "3ml/100kg",
+    "valor_cercafe": 46000.0,
+    "valor": 53065.6,
+    "valor_unidad_archivo": 531.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 1591.97,
+    "valor_unit": 530.656,
+    "precio_comp": 530.66,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Antiinflamatorio",
+    "molecula": "Ketoprofeno",
+    "concentracion": 0.15,
+    "comercial": "Profen",
+    "nombre_erp": "PROFEN 15% X 100 ML",
+    "laboratorio": "servinsumos",
+    "presentacion": "100ml",
+    "dosis_terapeutica": "3mg/kg",
+    "dosis_practica": "1ml/50kg",
+    "valor_cercafe": 69016.0,
+    "valor": 76437.33,
+    "valor_unidad_archivo": 764.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 1528.75,
+    "valor_unit": 764.3733,
+    "precio_comp": 764.37,
+    "unidad": "unit",
+    "dif_money": 233.71,
+    "dif_pct": 44.0,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Antiinflamatorio",
+    "molecula": "Ketoprofeno",
+    "concentracion": 0.1,
+    "comercial": "kenogan",
+    "nombre_erp": "KENOGAN X 50 ML",
+    "laboratorio": "vecol",
+    "presentacion": "50ml",
+    "dosis_terapeutica": "3mg/kg",
+    "dosis_practica": "3ml/100kg",
+    "valor_cercafe": 43865.0,
+    "valor": 47167.0,
+    "valor_unidad_archivo": 943.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 2830.02,
+    "valor_unit": 943.34,
+    "precio_comp": 943.34,
+    "unidad": "unit",
+    "dif_money": 412.68,
+    "dif_pct": 77.8,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Antiinflamatorio",
+    "molecula": "Ketoprofeno",
+    "concentracion": 0.1,
+    "comercial": "kenogan",
+    "nombre_erp": "KENOGAN X 100 ML",
+    "laboratorio": "vecol",
+    "presentacion": "100ml",
+    "dosis_terapeutica": "3mg/kg",
+    "dosis_practica": "3ml/100kg",
+    "valor_cercafe": 98100.0,
+    "valor": 108648.52,
+    "valor_unidad_archivo": 1086.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 3259.46,
+    "valor_unit": 1086.4852,
+    "precio_comp": 1086.49,
+    "unidad": "unit",
+    "dif_money": 555.83,
+    "dif_pct": 104.7,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Antiinflamatorio",
+    "molecula": "Ketoprofeno",
+    "concentracion": 0.1,
+    "comercial": "Ankofen ",
+    "nombre_erp": "ANKOFEN X 100 ML",
+    "laboratorio": "Kyrovet",
+    "presentacion": "100ml",
+    "dosis_terapeutica": "3mg/kg",
+    "dosis_practica": "3ml/100kg",
+    "valor_cercafe": 115353.0,
+    "valor": 127757.08,
+    "valor_unidad_archivo": 1278.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 3832.71,
+    "valor_unit": 1277.5708,
+    "precio_comp": 1277.57,
+    "unidad": "unit",
+    "dif_money": 746.91,
+    "dif_pct": 140.8,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Antiinflamatorio",
+  "molecula": "Meloxicam",
+  "n": 3,
+  "items": [
+   {
+    "tipo": "Antiinflamatorio",
+    "molecula": "Meloxicam",
+    "concentracion": 0.02,
+    "comercial": "Melovet",
+    "nombre_erp": "MELOVET X 50 ML",
+    "laboratorio": "VICAR",
+    "presentacion": "50ml",
+    "dosis_terapeutica": "0,4mg/kg",
+    "dosis_practica": "2,6ml/100kg",
+    "valor_cercafe": 41088.0,
+    "valor": 47399.57,
+    "valor_unidad_archivo": 948.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 2464.78,
+    "valor_unit": 947.9914,
+    "precio_comp": 947.99,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Antiinflamatorio",
+    "molecula": "Meloxicam",
+    "concentracion": 0.02,
+    "comercial": "Overxicam",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "Over",
+    "presentacion": "50ml",
+    "dosis_terapeutica": "0,4mg/kg",
+    "dosis_practica": "2ml/100kg",
+    "valor_cercafe": 61120.0,
+    "valor": 62953.6,
+    "valor_unidad_archivo": 1259.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 2518.14,
+    "valor_unit": 1259.072,
+    "precio_comp": 1259.07,
+    "unidad": "unit",
+    "dif_money": 311.08,
+    "dif_pct": 32.8,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Antiinflamatorio",
+    "molecula": "Meloxicam",
+    "concentracion": 0.02,
+    "comercial": "Meloxic",
+    "nombre_erp": "MELOXIC X 50 ML",
+    "laboratorio": "Provet",
+    "presentacion": "50ml",
+    "dosis_terapeutica": "0,4mg/kg",
+    "dosis_practica": "2ml/100kg",
+    "valor_cercafe": 94766.0,
+    "valor": 103920.1,
+    "valor_unidad_archivo": 2078.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 4156.8,
+    "valor_unit": 2078.402,
+    "precio_comp": 2078.4,
+    "unidad": "unit",
+    "dif_money": 1130.41,
+    "dif_pct": 119.2,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Desparasitante",
+  "molecula": "Doramectina",
+  "n": 4,
+  "items": [
+   {
+    "tipo": "Desparasitante",
+    "molecula": "Doramectina",
+    "concentracion": 0.01,
+    "comercial": "Endomec",
+    "nombre_erp": "ENDOMEC X 500 ML",
+    "laboratorio": "VICAR",
+    "presentacion": "500ml",
+    "dosis_terapeutica": "0,3mg/kg",
+    "dosis_practica": "1ml/33kg",
+    "valor_cercafe": 154058.0,
+    "valor": 125191.35,
+    "valor_unidad_archivo": 250.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 758.74,
+    "valor_unit": 250.3827,
+    "precio_comp": 250.38,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Desparasitante",
+    "molecula": "Doramectina",
+    "concentracion": 0.01,
+    "comercial": "Doragan",
+    "nombre_erp": "DORAGAN X 500",
+    "laboratorio": "Vecol",
+    "presentacion": "500ml",
+    "dosis_terapeutica": "0,3mg/kg",
+    "dosis_practica": "1ml/33kg",
+    "valor_cercafe": 120132.0,
+    "valor": 125657.94,
+    "valor_unidad_archivo": 251.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 761.56,
+    "valor_unit": 251.31588,
+    "precio_comp": 251.32,
+    "unidad": "unit",
+    "dif_money": 0.94,
+    "dif_pct": 0.4,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Desparasitante",
+    "molecula": "Doramectina",
+    "concentracion": 0.01,
+    "comercial": "Doracmetina",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "Allvet",
+    "presentacion": "500ml",
+    "dosis_terapeutica": "0,3mg/kg",
+    "dosis_practica": "1ml/33kg",
+    "valor_cercafe": 122242.0,
+    "valor": 134722.97,
+    "valor_unidad_archivo": 269.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 816.5,
+    "valor_unit": 269.44594,
+    "precio_comp": 269.45,
+    "unidad": "unit",
+    "dif_money": 19.07,
+    "dif_pct": 7.6,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Desparasitante",
+    "molecula": "Doramectina",
+    "concentracion": 0.01,
+    "comercial": "Dectomax",
+    "nombre_erp": "DECTOMAX X 500 ML",
+    "laboratorio": "Zoetis",
+    "presentacion": "500ml",
+    "dosis_terapeutica": "0,3mg/kg",
+    "dosis_practica": "1ml/33kg",
+    "valor_cercafe": 340700.0,
+    "valor": 377334.4,
+    "valor_unidad_archivo": 755.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 2286.88,
+    "valor_unit": 754.6688,
+    "precio_comp": 754.67,
+    "unidad": "unit",
+    "dif_money": 504.29,
+    "dif_pct": 201.4,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Hormona",
+  "molecula": "Altrenogest",
+  "n": 4,
+  "items": [
+   {
+    "tipo": "Hormona",
+    "molecula": "Altrenogest",
+    "concentracion": 0.004,
+    "comercial": "Altresyn",
+    "nombre_erp": "ALTRESYN X 1080 ML",
+    "laboratorio": "Ceva",
+    "presentacion": "1080ml",
+    "dosis_terapeutica": "20mg",
+    "dosis_practica": "5ml",
+    "valor_cercafe": 548399.0,
+    "valor": 607367.31,
+    "valor_unidad_archivo": 562.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 562.3771388888889,
+    "precio_comp": 562.38,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Hormona",
+    "molecula": "Altrenogest",
+    "concentracion": 0.004,
+    "comercial": "Progestar",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "VICAR",
+    "presentacion": "500ml",
+    "dosis_terapeutica": "20mg",
+    "dosis_practica": "5ml",
+    "valor_cercafe": 264960.0,
+    "valor": 292012.21,
+    "valor_unidad_archivo": 584.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 584.0244200000001,
+    "precio_comp": 584.02,
+    "unidad": "unit",
+    "dif_money": 21.64,
+    "dif_pct": 3.8,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Hormona",
+    "molecula": "Altrenogest",
+    "concentracion": 0.004,
+    "comercial": "Virbagest",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "Virbac",
+    "presentacion": "900ml",
+    "dosis_terapeutica": "20mg",
+    "dosis_practica": "5ml",
+    "valor_cercafe": 548769.0,
+    "valor": 565242.37,
+    "valor_unidad_archivo": 628.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 628.0470777777778,
+    "precio_comp": 628.05,
+    "unidad": "unit",
+    "dif_money": 65.67,
+    "dif_pct": 11.7,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Hormona",
+    "molecula": "Altrenogest",
+    "concentracion": 0.004,
+    "comercial": "Regumate",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "MSD",
+    "presentacion": "540ml",
+    "dosis_terapeutica": "20mg",
+    "dosis_practica": "5ml",
+    "valor_cercafe": 401546.0,
+    "valor": 413592.38,
+    "valor_unidad_archivo": 766.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 765.9118148148149,
+    "precio_comp": 765.91,
+    "unidad": "unit",
+    "dif_money": 203.53,
+    "dif_pct": 36.2,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Hormona",
+  "molecula": "Benzoato de estradiol",
+  "n": 2,
+  "items": [
+   {
+    "tipo": "Hormona",
+    "molecula": "Benzoato de estradiol",
+    "concentracion": 0.00025,
+    "comercial": "Estradiol",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "Over",
+    "presentacion": "100ml",
+    "dosis_terapeutica": "1-2mg",
+    "dosis_practica": "2-4ml ",
+    "valor_cercafe": 50754.0,
+    "valor": 52276.62,
+    "valor_unidad_archivo": 523.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 522.7662,
+    "precio_comp": 522.77,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Hormona",
+    "molecula": "Benzoato de estradiol",
+    "concentracion": 0.00025,
+    "comercial": "B. Estradiol",
+    "nombre_erp": "ESTRO ZOO",
+    "laboratorio": "ZOO",
+    "presentacion": "20ml",
+    "dosis_terapeutica": "1-2mg",
+    "dosis_practica": "0,5ml/50kg",
+    "valor_cercafe": 23245.0,
+    "valor": 58854.2,
+    "valor_unidad_archivo": 2943.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 2942.71,
+    "precio_comp": 2942.71,
+    "unidad": "unit",
+    "dif_money": 2419.94,
+    "dif_pct": 462.9,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Hormona",
+  "molecula": "Cloprostenol",
+  "n": 3,
+  "items": [
+   {
+    "tipo": "Hormona",
+    "molecula": "Cloprostenol",
+    "concentracion": 7.5e-05,
+    "comercial": "Ciclase",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "Zoetis",
+    "presentacion": "20ml",
+    "dosis_terapeutica": "175 µg",
+    "dosis_practica": "0,7ml",
+    "valor_cercafe": 49518.0,
+    "valor": 54573.52,
+    "valor_unidad_archivo": 2729.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 2728.676,
+    "precio_comp": 2728.68,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Hormona",
+    "molecula": "Cloprostenol",
+    "concentracion": 0.00025,
+    "comercial": "Sincrocio",
+    "nombre_erp": "SINCROCIO X 50 ML",
+    "laboratorio": "Ourofino",
+    "presentacion": "50ml",
+    "dosis_terapeutica": "175 µg",
+    "dosis_practica": "0,7ml",
+    "valor_cercafe": 196063.0,
+    "valor": 216080.61,
+    "valor_unidad_archivo": 4322.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 4321.6122,
+    "precio_comp": 4321.61,
+    "unidad": "unit",
+    "dif_money": 1592.93,
+    "dif_pct": 58.4,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Hormona",
+    "molecula": "Cloprostenol",
+    "concentracion": 0.00025,
+    "comercial": "Cloprostenol",
+    "nombre_erp": "ESTRUMATE",
+    "laboratorio": "MSD",
+    "presentacion": "50ml",
+    "dosis_terapeutica": "175 µg",
+    "dosis_practica": "0,7ml",
+    "valor_cercafe": 272663.0,
+    "valor": 313289.95,
+    "valor_unidad_archivo": 6266.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 6265.799,
+    "precio_comp": 6265.8,
+    "unidad": "unit",
+    "dif_money": 3537.12,
+    "dif_pct": 129.6,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Hormona",
+  "molecula": "Oxitocina",
+  "n": 2,
+  "items": [
+   {
+    "tipo": "Hormona",
+    "molecula": "Oxitocina",
+    "concentracion": "10 UI",
+    "comercial": "Oxitocina Sintética",
+    "nombre_erp": "OXITOCINA 10 CC",
+    "laboratorio": "Vecol",
+    "presentacion": "10ml",
+    "dosis_terapeutica": "10-20UI",
+    "dosis_practica": "1-2,5ml",
+    "valor_cercafe": 6661.0,
+    "valor": 7138.93,
+    "valor_unidad_archivo": 714.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 713.893,
+    "precio_comp": 713.89,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Hormona",
+    "molecula": "Oxitocina",
+    "concentracion": "10 UI",
+    "comercial": "Hormofisina",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "VICAR",
+    "presentacion": "10ml",
+    "dosis_terapeutica": "10-20UI",
+    "dosis_practica": "0,5-5ml",
+    "valor_cercafe": 21341.0,
+    "valor": 24619.06,
+    "valor_unidad_archivo": 2462.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 2461.906,
+    "precio_comp": 2461.91,
+    "unidad": "unit",
+    "dif_money": 1748.02,
+    "dif_pct": 244.9,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Hormona",
+  "molecula": "Prostaglandina",
+  "n": 3,
+  "items": [
+   {
+    "tipo": "Hormona",
+    "molecula": "Prostaglandina",
+    "concentracion": 0.00025,
+    "comercial": "Prostar D",
+    "nombre_erp": "PROSTAR D X 50 ML",
+    "laboratorio": "VICAR",
+    "presentacion": "50ml",
+    "dosis_terapeutica": "10mg",
+    "dosis_practica": "1 ml",
+    "valor_cercafe": 71203.0,
+    "valor": 74073.48,
+    "valor_unidad_archivo": 1481.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 1481.4696,
+    "precio_comp": 1481.47,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Hormona",
+    "molecula": "Prostaglandina",
+    "concentracion": 0.005,
+    "comercial": "Lutalyse",
+    "nombre_erp": "LUTALYSE 5MG X 30 ML",
+    "laboratorio": "Zoetis",
+    "presentacion": "30ml",
+    "dosis_terapeutica": "10mg",
+    "dosis_practica": "2ml",
+    "valor_cercafe": 107500.0,
+    "valor": 119059.13,
+    "valor_unidad_archivo": 3969.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 3968.637666666667,
+    "precio_comp": 3968.64,
+    "unidad": "unit",
+    "dif_money": 2487.17,
+    "dif_pct": 167.9,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Hormona",
+    "molecula": "Prostaglandina",
+    "concentracion": 0.00025,
+    "comercial": "Estrumate",
+    "nombre_erp": "ESTRUMATE X 50 ML",
+    "laboratorio": "MSD",
+    "presentacion": "50ml",
+    "dosis_terapeutica": "10mg",
+    "dosis_practica": "0,7ml",
+    "valor_cercafe": 272663.0,
+    "valor": 265068.09,
+    "valor_unidad_archivo": 5301.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 5301.361800000001,
+    "precio_comp": 5301.36,
+    "unidad": "unit",
+    "dif_money": 3819.89,
+    "dif_pct": 257.8,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Hormona",
+  "molecula": "carbetocina",
+  "n": 2,
+  "items": [
+   {
+    "tipo": "Hormona",
+    "molecula": "carbetocina",
+    "concentracion": 5e-05,
+    "comercial": "Forcecarb",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "Over",
+    "presentacion": "10ml",
+    "dosis_terapeutica": "35–70 µg",
+    "dosis_practica": "2-4ml ",
+    "valor_cercafe": 29863.0,
+    "valor": 34303.12,
+    "valor_unidad_archivo": 3430.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 3430.3120000000004,
+    "precio_comp": 3430.31,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Hormona",
+    "molecula": "carbetocina",
+    "concentracion": 5e-05,
+    "comercial": "Decomoton",
+    "nombre_erp": "DECOMOTON N X 10ML",
+    "laboratorio": "Calier",
+    "presentacion": "10ml",
+    "dosis_terapeutica": "35–70 µg",
+    "dosis_practica": "2-4ml ",
+    "valor_cercafe": 46629.0,
+    "valor": 44491.97,
+    "valor_unidad_archivo": 4449.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 4449.197,
+    "precio_comp": 4449.2,
+    "unidad": "unit",
+    "dif_money": 1018.89,
+    "dif_pct": 29.7,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Corticoide",
+  "molecula": "Betametasona",
+  "n": 2,
+  "items": [
+   {
+    "tipo": "Corticoide",
+    "molecula": "Betametasona",
+    "concentracion": 0.002,
+    "comercial": "Cortizyn",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "VICAR",
+    "presentacion": "20ml",
+    "dosis_terapeutica": "0,1mg/kg",
+    "dosis_practica": "1,5-5ml",
+    "valor_cercafe": 19500.0,
+    "valor": 22495.2,
+    "valor_unidad_archivo": 1125.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 1687.14,
+    "valor_unit": 1124.76,
+    "precio_comp": 1124.76,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Corticoide",
+    "molecula": "Betametasona",
+    "concentracion": 0.002,
+    "comercial": "Inflacor",
+    "nombre_erp": "INFLACOR INY X 20 ML",
+    "laboratorio": "Chalver",
+    "presentacion": "20ml",
+    "dosis_terapeutica": "0,1mg/kg",
+    "dosis_practica": "1-2,5ml",
+    "valor_cercafe": 53027.0,
+    "valor": 58696.34,
+    "valor_unidad_archivo": 2935.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 2934.82,
+    "valor_unit": 2934.817,
+    "precio_comp": 2934.82,
+    "unidad": "unit",
+    "dif_money": 1810.06,
+    "dif_pct": 160.9,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Corticoide",
+  "molecula": "Dexametasona",
+  "n": 1,
+  "items": [
+   {
+    "tipo": "Corticoide",
+    "molecula": "Dexametasona",
+    "concentracion": 0.002,
+    "comercial": "Dexametasona over",
+    "nombre_erp": "DEXAMETASONA X 50",
+    "laboratorio": "Over",
+    "presentacion": "100ml",
+    "dosis_terapeutica": "0,1mg/kg",
+    "dosis_practica": "1-1,5ml/100kg",
+    "valor_cercafe": 70367.0,
+    "valor": 84350.82,
+    "valor_unidad_archivo": 844.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 843.51,
+    "valor_unit": 843.5082000000001,
+    "precio_comp": 843.51,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   }
+  ]
+ },
+ {
+  "tipo": "Probiotico",
+  "molecula": "Prebioticos",
+  "n": 1,
+  "items": [
+   {
+    "tipo": "Probiotico",
+    "molecula": "Prebioticos",
+    "concentracion": " ",
+    "comercial": "Symbios",
+    "nombre_erp": "SYMBIOS 1000 G",
+    "laboratorio": "DQSA",
+    "presentacion": "1000 gr",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "1g/lt",
+    "valor_cercafe": 38837.0,
+    "valor": 43006.62,
+    "valor_unidad_archivo": 43.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 43.006620000000005,
+    "precio_comp": 43.01,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   }
+  ]
+ },
+ {
+  "tipo": "Probiotico",
+  "molecula": "Probioticos",
+  "n": 2,
+  "items": [
+   {
+    "tipo": "Probiotico",
+    "molecula": "Probioticos",
+    "concentracion": " ",
+    "comercial": "Eubiol",
+    "nombre_erp": "EUBIOL X KG",
+    "laboratorio": "Bioara",
+    "presentacion": "1000gr",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "0,5-1g/1lt",
+    "valor_cercafe": 86000.0,
+    "valor": 80960.06,
+    "valor_unidad_archivo": 81.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 80.96006,
+    "precio_comp": 80.96,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Probiotico",
+    "molecula": "Probioticos",
+    "concentracion": " ",
+    "comercial": "Polimeve",
+    "nombre_erp": "POLIMEVE SOLUBLE X 100 GRAMOS",
+    "laboratorio": "IMEVE",
+    "presentacion": "100 gr",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "1g/5-10lt",
+    "valor_cercafe": 49965.0,
+    "valor": 55065.86,
+    "valor_unidad_archivo": 551.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 550.6586,
+    "precio_comp": 550.66,
+    "unidad": "unit",
+    "dif_money": 469.7,
+    "dif_pct": 580.2,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Antihistaminico",
+  "molecula": "Antihistaminico",
+  "n": 2,
+  "items": [
+   {
+    "tipo": "Antihistaminico",
+    "molecula": "Antihistaminico",
+    "concentracion": 0.025,
+    "comercial": "Histavet",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "VICAR",
+    "presentacion": "250ml",
+    "dosis_terapeutica": "1-2mg/kg",
+    "dosis_practica": "1ml/10-20kg",
+    "valor_cercafe": 42560.0,
+    "valor": 43836.8,
+    "valor_unidad_archivo": 175.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 1227.0,
+    "valor_unit": 175.34720000000002,
+    "precio_comp": 175.35,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Antihistaminico",
+    "molecula": "Antihistaminico",
+    "concentracion": 0.025,
+    "comercial": "Vethistam",
+    "nombre_erp": "VETHISTAM 25 X 50 ML",
+    "laboratorio": "Virbac",
+    "presentacion": "50ml",
+    "dosis_terapeutica": "1-2mg/kg",
+    "dosis_practica": "2-4ml/100kg",
+    "valor_cercafe": 23422.0,
+    "valor": 25940.55,
+    "valor_unidad_archivo": 519.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 1037.62,
+    "valor_unit": 518.811,
+    "precio_comp": 518.81,
+    "unidad": "unit",
+    "dif_money": 343.46,
+    "dif_pct": 195.9,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Adrenalina",
+  "molecula": "Adrenalina",
+  "n": 1,
+  "items": [
+   {
+    "tipo": "Adrenalina",
+    "molecula": "Adrenalina",
+    "concentracion": 0.001,
+    "comercial": "Adrenalina Vet",
+    "nombre_erp": "ADRENALINA X 20 ML",
+    "laboratorio": "Life",
+    "presentacion": "20ml",
+    "dosis_terapeutica": "0,01 mg/kg",
+    "dosis_practica": "1-3 ml",
+    "valor_cercafe": 35480.0,
+    "valor": 39705.47,
+    "valor_unidad_archivo": 1985.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 1985.2735,
+    "precio_comp": 1985.27,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   }
+  ]
+ },
+ {
+  "tipo": "Nutraceuticos",
+  "molecula": "Energizante para lechón",
+  "n": 3,
+  "items": [
+   {
+    "tipo": "Nutraceuticos",
+    "molecula": "Energizante para lechón",
+    "concentracion": " ",
+    "comercial": "Energibac",
+    "nombre_erp": "ENERGI-BAC X 500ML",
+    "laboratorio": "Vetbio",
+    "presentacion": "500ml",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "2 ml",
+    "valor_cercafe": 68600.0,
+    "valor": 75604.06,
+    "valor_unidad_archivo": 151.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 151.20812,
+    "precio_comp": 151.21,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Nutraceuticos",
+    "molecula": "Energizante para lechón",
+    "concentracion": " ",
+    "comercial": "Pigsaver",
+    "nombre_erp": "PIG SAVER FRASCO X 250 ML",
+    "laboratorio": "Liptosa",
+    "presentacion": "250ml",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "2ml",
+    "valor_cercafe": 50025.0,
+    "valor": 50656.43,
+    "valor_unidad_archivo": 203.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 202.62572,
+    "precio_comp": 202.63,
+    "unidad": "unit",
+    "dif_money": 51.42,
+    "dif_pct": 34.0,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Nutraceuticos",
+    "molecula": "Energizante para lechón",
+    "concentracion": " ",
+    "comercial": "DBI Líquido",
+    "nombre_erp": "DBI LIQUIDO NF FRACO X 500 ML",
+    "laboratorio": "Amerivet",
+    "presentacion": "500ml",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "1-2ml",
+    "valor_cercafe": 113000.0,
+    "valor": 124537.3,
+    "valor_unidad_archivo": 249.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 249.0746,
+    "precio_comp": 249.07,
+    "unidad": "unit",
+    "dif_money": 97.86,
+    "dif_pct": 64.7,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Polvo secante",
+  "molecula": "Polvo secante para lechón",
+  "n": 3,
+  "items": [
+   {
+    "tipo": "Polvo secante",
+    "molecula": "Polvo secante para lechón",
+    "concentracion": " ",
+    "comercial": "Arbocel",
+    "nombre_erp": "ARBOCEL BULTO X 20KG",
+    "laboratorio": "Agralba",
+    "presentacion": "20000gr",
+    "dosis_terapeutica": " ",
+    "dosis_practica": " ",
+    "valor_cercafe": 144372.0,
+    "valor": 148703.16,
+    "valor_unidad_archivo": 7.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 7.435158,
+    "precio_comp": 7.44,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Polvo secante",
+    "molecula": "Polvo secante para lechón",
+    "concentracion": " ",
+    "comercial": "Clarex",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "Amerivet",
+    "presentacion": "25000gr",
+    "dosis_terapeutica": " ",
+    "dosis_practica": " ",
+    "valor_cercafe": 264022.0,
+    "valor": 271942.66,
+    "valor_unidad_archivo": 11.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 10.8777064,
+    "precio_comp": 10.88,
+    "unidad": "unit",
+    "dif_money": 3.44,
+    "dif_pct": 46.2,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Polvo secante",
+    "molecula": "Polvo secante para lechón",
+    "concentracion": " ",
+    "comercial": "Natuklairpiggy",
+    "nombre_erp": "NATUKLAIR PIGGY X 20 KG",
+    "laboratorio": "Germitech",
+    "presentacion": "20000gr",
+    "dosis_terapeutica": " ",
+    "dosis_practica": " ",
+    "valor_cercafe": 246400.0,
+    "valor": 253792.0,
+    "valor_unidad_archivo": 13.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 12.6896,
+    "precio_comp": 12.69,
+    "unidad": "unit",
+    "dif_money": 5.25,
+    "dif_pct": 70.6,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Antiséptico- Larvicida",
+  "molecula": "Cipermetrina",
+  "n": 2,
+  "items": [
+   {
+    "tipo": "Antiséptico- Larvicida",
+    "molecula": "Cipermetrina",
+    "concentracion": " ",
+    "comercial": "Kyrogusan",
+    "nombre_erp": "KIRAGUSAN",
+    "laboratorio": "Kyrovet",
+    "presentacion": "500ml",
+    "dosis_terapeutica": " ",
+    "dosis_practica": " ",
+    "valor_cercafe": 23878.0,
+    "valor": 26445.25,
+    "valor_unidad_archivo": 53.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 52.8905,
+    "precio_comp": 52.89,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Antiséptico- Larvicida",
+    "molecula": "Cipermetrina",
+    "concentracion": " ",
+    "comercial": "Curagan",
+    "nombre_erp": "CURAGAN X UD",
+    "laboratorio": "Elanco",
+    "presentacion": "350ml",
+    "dosis_terapeutica": " ",
+    "dosis_practica": " ",
+    "valor_cercafe": 29481.0,
+    "valor": 32651.0,
+    "valor_unidad_archivo": 93.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 93.28857142857143,
+    "precio_comp": 93.29,
+    "unidad": "unit",
+    "dif_money": 40.4,
+    "dif_pct": 76.4,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Anticoccidial",
+  "molecula": "Toltrazuril",
+  "n": 4,
+  "items": [
+   {
+    "tipo": "Anticoccidial",
+    "molecula": "Toltrazuril",
+    "concentracion": 0.05,
+    "comercial": "Overcox",
+    "nombre_erp": "OVERCOX 5% X LT",
+    "laboratorio": "Over",
+    "presentacion": "1000ml",
+    "dosis_terapeutica": "20mg/kg",
+    "dosis_practica": "1ml/2,5kg",
+    "valor_cercafe": 268156.0,
+    "valor": 286926.0,
+    "valor_unidad_archivo": 287.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 573.85,
+    "valor_unit": 286.926,
+    "precio_comp": 286.93,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Anticoccidial",
+    "molecula": "Toltrazuril",
+    "concentracion": 0.05,
+    "comercial": "Overcox",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "Over",
+    "presentacion": "500ml",
+    "dosis_terapeutica": "20mg/kg",
+    "dosis_practica": "1ml/2,5kg",
+    "valor_cercafe": 186727.0,
+    "valor": 192328.81,
+    "valor_unidad_archivo": 385.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 769.32,
+    "valor_unit": 384.65762,
+    "precio_comp": 384.66,
+    "unidad": "unit",
+    "dif_money": 97.73,
+    "dif_pct": 34.1,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Anticoccidial",
+    "molecula": "Toltrazuril",
+    "concentracion": 0.05,
+    "comercial": "Coccitrak",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "Pisa",
+    "presentacion": "250ml",
+    "dosis_terapeutica": "20mg/kg",
+    "dosis_practica": "1ml/2,5kg",
+    "valor_cercafe": 108700.0,
+    "valor": 111961.0,
+    "valor_unidad_archivo": 448.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 895.69,
+    "valor_unit": 447.844,
+    "precio_comp": 447.84,
+    "unidad": "unit",
+    "dif_money": 160.91,
+    "dif_pct": 56.1,
+    "es_mejor": false
+   },
+   {
+    "tipo": "Anticoccidial",
+    "molecula": "Toltrazuril",
+    "concentracion": 0.05,
+    "comercial": "Genzuril",
+    "nombre_erp": "GENZURIL X 250 ML",
+    "laboratorio": "servinsumos",
+    "presentacion": "250ml",
+    "dosis_terapeutica": "20mg/kg",
+    "dosis_practica": "0,4ml/kg",
+    "valor_cercafe": 154904.0,
+    "valor": 135508.86,
+    "valor_unidad_archivo": 542.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 1084.07,
+    "valor_unit": 542.03544,
+    "precio_comp": 542.04,
+    "unidad": "unit",
+    "dif_money": 255.11,
+    "dif_pct": 88.9,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Tranquilizante",
+  "molecula": "Azaperona",
+  "n": 2,
+  "items": [
+   {
+    "tipo": "Tranquilizante",
+    "molecula": "Azaperona",
+    "concentracion": 0.04,
+    "comercial": "Procina",
+    "nombre_erp": "No encontrado",
+    "laboratorio": "Pisa",
+    "presentacion": "50ml",
+    "dosis_terapeutica": "2mg/kg",
+    "dosis_practica": "1ml/20kg",
+    "valor_cercafe": 85400.0,
+    "valor": 87962.0,
+    "valor_unidad_archivo": 1759.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 8796.2,
+    "valor_unit": 1759.24,
+    "precio_comp": 1759.24,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Tranquilizante",
+    "molecula": "Azaperona",
+    "concentracion": 0.04,
+    "comercial": "Stresnil",
+    "nombre_erp": "STRESNIL 100 ML",
+    "laboratorio": "Elanco",
+    "presentacion": "100ml",
+    "dosis_terapeutica": "2mg/kg",
+    "dosis_practica": "1ml/20kg",
+    "valor_cercafe": 393000.0,
+    "valor": 435257.4,
+    "valor_unidad_archivo": 4353.0,
+    "tiene_costo_tratamiento": true,
+    "costo_tratamiento": 21762.87,
+    "valor_unit": 4352.5740000000005,
+    "precio_comp": 4352.57,
+    "unidad": "unit",
+    "dif_money": 2593.33,
+    "dif_pct": 147.4,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Broncodilatador + Expectorante",
+  "molecula": "Bromexhina",
+  "n": 2,
+  "items": [
+   {
+    "tipo": "Broncodilatador + Expectorante",
+    "molecula": "Bromexhina",
+    "concentracion": " ",
+    "comercial": "Novabroncol",
+    "nombre_erp": "NOVABRONCOL 20 LTS",
+    "laboratorio": "Novalfarm",
+    "presentacion": "20000ml",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "4ml/lt",
+    "valor_cercafe": 323971.0,
+    "valor": 356850.71,
+    "valor_unidad_archivo": 18.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 17.8425355,
+    "precio_comp": 17.84,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Broncodilatador + Expectorante",
+    "molecula": "Bromexhina",
+    "concentracion": " ",
+    "comercial": "Novabroncol",
+    "nombre_erp": "NOVABRONCOL 4 LTS",
+    "laboratorio": "Novalfarm",
+    "presentacion": "4000ml",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "4ml/lt",
+    "valor_cercafe": 97044.0,
+    "valor": 103837.0,
+    "valor_unidad_archivo": 26.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 25.95925,
+    "precio_comp": 25.96,
+    "unidad": "unit",
+    "dif_money": 8.12,
+    "dif_pct": 45.5,
+    "es_mejor": false
+   }
+  ]
+ },
+ {
+  "tipo": "Broncodilatador + Expectorante",
+  "molecula": "Dihidroyoduro + Vitamina B12",
+  "n": 1,
+  "items": [
+   {
+    "tipo": "Broncodilatador + Expectorante",
+    "molecula": "Dihidroyoduro + Vitamina B12",
+    "concentracion": " ",
+    "comercial": "Mucosol",
+    "nombre_erp": "MUCOSOL X UD",
+    "laboratorio": "Avimex",
+    "presentacion": "1000gr",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "1g/10lt",
+    "valor_cercafe": 54862.0,
+    "valor": 58702.0,
+    "valor_unidad_archivo": 59.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 58.702,
+    "precio_comp": 58.7,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   }
+  ]
+ },
+ {
+  "tipo": "Broncodilatador + Expectorante",
+  "molecula": "Guayacolato de Glicerilo + Bromexhina",
+  "n": 2,
+  "items": [
+   {
+    "tipo": "Broncodilatador + Expectorante",
+    "molecula": "Guayacolato de Glicerilo + Bromexhina",
+    "concentracion": " ",
+    "comercial": "Broncobiol",
+    "nombre_erp": "BRONCOBIOL X 20 LT",
+    "laboratorio": "Bioara",
+    "presentacion": "20000ml",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "0,3-0,5ml/lt",
+    "valor_cercafe": 694000.0,
+    "valor": 768623.08,
+    "valor_unidad_archivo": 38.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 38.431154,
+    "precio_comp": 38.43,
+    "unidad": "unit",
+    "dif_money": 0.0,
+    "dif_pct": 0.0,
+    "es_mejor": true
+   },
+   {
+    "tipo": "Broncodilatador + Expectorante",
+    "molecula": "Guayacolato de Glicerilo + Bromexhina",
+    "concentracion": " ",
+    "comercial": "Broncobiol",
+    "nombre_erp": "BRONCOBIOL X 4 LT",
+    "laboratorio": "Bioara",
+    "presentacion": "4000ml",
+    "dosis_terapeutica": " ",
+    "dosis_practica": "0,3-0,5ml/lt",
+    "valor_cercafe": 150000.0,
+    "valor": 160500.0,
+    "valor_unidad_archivo": 40.0,
+    "tiene_costo_tratamiento": false,
+    "costo_tratamiento": null,
+    "valor_unit": 40.125,
+    "precio_comp": 40.12,
+    "unidad": "unit",
+    "dif_money": 1.69,
+    "dif_pct": 4.4,
+    "es_mejor": false
+   }
+  ]
+ }
+]</script>
+<script>
+
+
+let DATA = JSON.parse(document.getElementById('data-json').textContent);
+
+const fmtCOP = new Intl.NumberFormat('es-CO', {style:'currency', currency:'COP', maximumFractionDigits:0});
+const fmtNum = new Intl.NumberFormat('es-CO', {maximumFractionDigits:0});
+
+function fmtConc(c){
+  if(c === null || c === undefined || c === '') return null;
+  if(typeof c === 'number'){
+    if(c <= 1) return (c*100).toLocaleString('es-CO', {maximumFractionDigits:2}) + '%';
+    return fmtNum.format(c);
+  }
+  return String(c);
+}
+
+function unitLabel(unidad){
+  return unidad === 'unit' ? '/ ml·g' : 'total';
+}
+
+// ---------- Hero stats ----------
+function buildHeroStats(){
+  const comparable = DATA.filter(g => g.n > 1);
+  const allDiffs = comparable.map(g => g.items[g.items.length-1].dif_pct);
+  const avgDiff = allDiffs.reduce((a,b)=>a+b,0) / allDiffs.length;
+  const maxDiff = Math.max(...allDiffs);
+  const totalProductos = DATA.reduce((a,g)=>a+g.n,0);
+  const labs = new Set();
+  DATA.forEach(g => g.items.forEach(it => { if(it.laboratorio) labs.add(it.laboratorio.trim().toLowerCase()); }));
+
+  const stats = [
+    {val: totalProductos, lbl:'productos de ' + DATA.length + ' grupos comparativos', accent:false},
+    {val: labs.size, lbl:'laboratorios distintos en el comparativo', accent:false},
+    {val: '+' + Math.round(avgDiff) + '%', lbl:'diferencia promedio entre la opción más cara y la más económica', accent:'sage'},
+    {val: '+' + Math.round(maxDiff) + '%', lbl:'mayor diferencia encontrada en un solo grupo', accent:'gold'},
+  ];
+
+  const el = document.getElementById('heroStats');
+  el.innerHTML = stats.map(s => `
+    <div class="gauge">
+      <div class="ticks">${Array.from({length:10}).map(()=>'<span></span>').join('')}</div>
+      <span class="val ${s.accent?s.accent:''}">${s.val}</span>
+      <div class="lbl">${s.lbl}</div>
+    </div>
+  `).join('');
+}
+
+// ---------- Controls ----------
+function buildTipoSelect(){
+  const tipos = [];
+  DATA.forEach(g => { if(!tipos.includes(g.tipo)) tipos.push(g.tipo); });
+  const sel = document.getElementById('tipoSelect');
+  sel.innerHTML = '<option value="">Todos los tipos</option>' + tipos.map(t => `<option value="${t}">${t.trim()}</option>`).join('');
+}
+
+let state = {
+  search: '',
+  tipo: '',
+  sort: 'impacto'
+};
+
+function matches(group){
+  if(state.tipo && group.tipo !== state.tipo) return false;
+  if(!state.search) return true;
+  const q = state.search.toLowerCase();
+  if(group.molecula.toLowerCase().includes(q)) return true;
+  return group.items.some(it =>
+    (it.comercial||'').toLowerCase().includes(q) ||
+    (it.laboratorio||'').toLowerCase().includes(q)
+  );
+}
+
+function groupImpact(g){
+  if(g.n <= 1) return -1;
+  return g.items[g.items.length-1].dif_pct;
+}
+
+function render(){
+  const filtered = DATA.filter(matches);
+
+  let ordered;
+  if(state.sort === 'impacto'){
+    ordered = [...filtered].sort((a,b) => groupImpact(b) - groupImpact(a));
+  } else {
+    // alfabetico, preserving tipo blocks in original order but sorted by molecula within
+    const tipoOrder = [];
+    DATA.forEach(g => { if(!tipoOrder.includes(g.tipo)) tipoOrder.push(g.tipo); });
+    ordered = [...filtered].sort((a,b) => {
+      const ta = tipoOrder.indexOf(a.tipo), tb = tipoOrder.indexOf(b.tipo);
+      if(ta !== tb) return ta - tb;
+      return a.molecula.localeCompare(b.molecula, 'es');
+    });
+  }
+
+  const countPill = document.getElementById('countPill');
+  const totalProductosFiltered = filtered.reduce((a,g)=>a+g.n,0);
+  countPill.innerHTML = `<b>${filtered.length}</b> grupos · <b>${totalProductosFiltered}</b> productos`;
+
+  const main = document.getElementById('main');
+
+  if(ordered.length === 0){
+    main.innerHTML = `<div class="empty-state"><div class="display">Sin resultados</div>No hay grupos que coincidan con la búsqueda o el filtro seleccionado.</div>`;
+    return;
+  }
+
+  if(state.sort === 'alfa'){
+    // render with tipo section headings
+    let html = '';
+    let lastTipo = null;
+    let idx = 0;
+    ordered.forEach(g => {
+      if(g.tipo !== lastTipo){
+        idx++;
+        html += `<div class="tipo-heading"><span class="num">${String(idx).padStart(2,'0')}</span><h2>${g.tipo.trim()}</h2><div class="rule"></div></div>`;
+        lastTipo = g.tipo;
+      }
+      html += renderGroupCard(g, false);
+    });
+    main.innerHTML = html;
+  } else {
+    main.innerHTML = ordered.map((g,i) => renderGroupCard(g, i < 3 && g.n > 1)).join('');
+  }
+}
+
+function extraInfoHtml(it){
+  let html = '';
+  if(it.nombre_erp){
+    html += `<div class="erp-line">🏷️ ERP: ${it.nombre_erp}</div>`;
+  }
+  if(it.tiene_costo_tratamiento && it.costo_tratamiento !== null && it.costo_tratamiento !== undefined){
+    html += `<div class="costo-line">💊 Costo del tratamiento: ${fmtCOP.format(it.costo_tratamiento)}</div>`;
+  }
+  return html;
+}
+
+function renderGroupCard(g, highlight){
+  const items = g.items;
+  const isComparable = g.n > 1;
+  const maxPrice = Math.max(...items.map(it => it.precio_comp));
+  const minPrice = items[0].precio_comp;
+  const worst = items[items.length-1];
+
+  const concStr = fmtConc(items[0].concentracion);
+
+  let impactBadge = '';
+  if(isComparable){
+    const cls = worst.dif_pct >= 80 ? '' : 'low';
+    const flame = worst.dif_pct >= 200 ? '🔥' : (worst.dif_pct >= 80 ? '⚠️' : '✓');
+    impactBadge = `<div class="impact-badge ${cls}"><span class="flame">${flame}</span>hasta +${worst.dif_pct}% · ${fmtCOP.format(worst.dif_money)} más caro</div>`;
+  } else {
+    impactBadge = `<div class="impact-badge low"><span class="flame">·</span>proveedor único</div>`;
+  }
+
+  let bodyHtml;
+  if(isComparable){
+    // detectar comerciales repetidos (mismo producto en varias presentaciones) para desambiguar
+    const nameCounts = {};
+    items.forEach(it => {
+      const key = ((it.comercial||'').trim() + '|' + (it.laboratorio||'').trim()).toLowerCase();
+      nameCounts[key] = (nameCounts[key]||0) + 1;
+    });
+    bodyHtml = `<div class="scale-wrap">` + items.map(it => {
+      const pct = maxPrice > 0 ? (it.precio_comp / maxPrice) * 100 : 0;
+      const isBest = it.es_mejor;
+      const diffHtml = isBest
+        ? `<span class="diff best-tag">🏆 mejor precio</span>`
+        : `<span class="diff">+${it.dif_pct}% · ${fmtCOP.format(it.dif_money)}</span>`;
+      const key = ((it.comercial||'').trim() + '|' + (it.laboratorio||'').trim()).toLowerCase();
+      const showPres = nameCounts[key] > 1 && it.presentacion;
+      const displayName = (it.comercial || '—') + (showPres ? ` <span class="pres-tag">(${it.presentacion})</span>` : '');
+      return `
+        <div class="product-row">
+          <div class="prod-id">
+            <div class="name">${displayName}</div>
+            <div class="lab">${it.laboratorio || '—'}</div>
+            ${it.dosis_practica ? `<div class="dosis">💉 ${it.dosis_practica}</div>` : ''}
+            ${extraInfoHtml(it)}
+          </div>
+          <div class="bar-lane">
+            <div class="scale-track"></div>
+            <div class="bar-fill ${isBest?'best':''}" style="width:${pct}%"></div>
+            <div class="marker ${isBest?'best':''}" style="left:${pct}%"></div>
+          </div>
+          <div class="price-cell">
+            <span class="unit-lbl">Valor unidad</span>
+            <span class="amt">${fmtCOP.format(it.precio_comp)} <span style="font-weight:400;color:var(--text-mute);font-size:13px;">${unitLabel(it.unidad)}</span></span>
+            ${diffHtml}
+            <span class="valor-total">Valor asociado: ${it.valor !== null && it.valor !== undefined ? fmtCOP.format(it.valor) : '—'}${it.presentacion ? ' · pres. ' + it.presentacion : ''}</span>
+          </div>
+        </div>
+      `;
+    }).join('') + `</div>`;
+  } else {
+    const it = items[0];
+    bodyHtml = `
+      <div class="product-row" style="grid-template-columns:240px 1fr 250px;">
+        <div class="prod-id">
+          <div class="name">${it.comercial || '—'}</div>
+          <div class="lab">${it.laboratorio || '—'}</div>
+          ${it.dosis_practica ? `<div class="dosis">💉 ${it.dosis_practica}</div>` : ''}
+          ${extraInfoHtml(it)}
+        </div>
+        <div class="single-note">Sin comparativo disponible: único proveedor registrado para este compuesto.</div>
+        <div class="price-cell">
+          <span class="unit-lbl">Valor unidad</span>
+          <span class="amt">${fmtCOP.format(it.precio_comp)} <span style="font-weight:400;color:var(--text-mute);font-size:13px;">${unitLabel(it.unidad)}</span></span>
+          <span class="valor-total">Valor asociado: ${it.valor !== null && it.valor !== undefined ? fmtCOP.format(it.valor) : '—'}${it.presentacion ? ' · pres. ' + it.presentacion : ''}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="group-card ${highlight ? 'top-impact' : ''}">
+      <div class="group-head">
+        <div>
+          <h3>${g.molecula}</h3>
+          <div class="group-meta">
+            <span class="chip">${g.tipo.trim()}</span>
+            ${concStr ? `<span class="chip">${concStr}</span>` : ''}
+            <span>${g.n} ${g.n === 1 ? 'opción registrada' : 'opciones comparadas'}</span>
+          </div>
+        </div>
+        ${impactBadge}
+      </div>
+      ${bodyHtml}
+    </div>
+  `;
+}
+
+// ---------- Wire up events ----------
+document.getElementById('searchInput').addEventListener('input', e => {
+  state.search = e.target.value.trim();
+  render();
+});
+document.getElementById('tipoSelect').addEventListener('change', e => {
+  state.tipo = e.target.value;
+  render();
+});
+document.querySelectorAll('.toggle-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.sort = btn.dataset.sort;
+    render();
+  });
+});
+
+// ---------- Cargar Excel actualizado ----------
+function extractPresBaseUnits(pres){
+  // Devuelve el número de presentación normalizado a gramos/ml (kg/Lt -> x1000)
+  if(pres === null || pres === undefined || pres === '') return null;
+  if(typeof pres === 'number') return pres;
+  const s = String(pres).trim().toLowerCase().replace(',', '.');
+  const m = s.match(/^(\d+(?:\.\d+)?)\s*([a-z]*)/);
+  if(!m) return null;
+  const num = parseFloat(m[1]);
+  const unit = m[2];
+  if(['kg','kgs','kilo','kilos'].includes(unit)) return num * 1000;
+  if(['lt','l','lts','litro','litros'].includes(unit)) return num * 1000;
+  return num; // gr, g, ml, ui, o sin unidad -> tal cual
+}
+
+function parseCurrencyValue(v){
+  // Acepta números directos o texto tipo "$ 320.859,00" / " $   3.450"
+  if(v === null || v === undefined || v === '') return null;
+  if(typeof v === 'number') return v;
+  let s = String(v).trim();
+  if(s === '' || normalizeStr(s) === 'NO ENCONTRADO') return null;
+  s = s.replace(/\$/g, '').trim();
+  s = s.replace(/\./g, '').replace(',', '.');
+  const n = parseFloat(s);
+  return isNaN(n) ? null : n;
+}
+
+function findColsByHeader(headers, mustIncludeTokens){
+  const norm = headers.map(h => normalizeStr(h));
+  const out = [];
+  norm.forEach((h, idx) => {
+    if(mustIncludeTokens.every(tok => h.includes(tok))) out.push(idx);
+  });
+  return out;
+}
+
+function parseWorkbookToGroups(workbook){
+  const sheetName = workbook.SheetNames[0];
+  const ws = workbook.Sheets[sheetName];
+  const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:null, raw:true});
+  if(rows.length < 2) return [];
+  const headers = rows[0];
+  const dataRows = rows.slice(1);
+
+  const tipoCol = findColsByHeader(headers, ['TIPO'])[0] ?? findColsByHeader(headers, ['GRUPO'])[0];
+  const moleculaCol = findColsByHeader(headers, ['MOLECULA'])[0];
+  const concCol = findColsByHeader(headers, ['CONCENTRACION'])[0];
+  const comercialCol = findColsByHeader(headers, ['COMERCIAL'])[0];
+  const erpCol = findColsByHeader(headers, ['ERP'])[0];
+  const labCol = findColsByHeader(headers, ['LABORATORIO'])[0];
+  const dosisTerapCol = findColsByHeader(headers, ['DOSIS','TERAP'])[0];
+  const dosisPracticaCol = findColsByHeader(headers, ['DOSIS','PRACTIC'])[0];
+  const valorAsociadoCol = findColsByHeader(headers, ['VALOR','ASOCIADO'])[0];
+  const tieneCostoCol = findColsByHeader(headers, ['TIENE','COSTO'])[0];
+  const costoTratamientoCol = findColsByHeader(headers, ['COSTO','TRATAMIENTO']).find(idx => !normalizeStr(headers[idx]).includes('TIENE'));
+  const presCols = findColsByHeader(headers, ['PRESENTACION']);
+
+  if(moleculaCol === undefined || valorAsociadoCol === undefined || presCols.length === 0) return null;
+
+  // si hay dos columnas "Presentación" (numérica + con unidad), detectar cuál es cuál mirando los datos
+  let presNumCol = presCols[0], presTxtCol = presCols[presCols.length-1];
+  if(presCols.length > 1){
+    const sample = dataRows.find(r => r[presCols[0]] !== null || r[presCols[1]] !== null);
+    if(sample){
+      const a = sample[presCols[0]], b = sample[presCols[1]];
+      if(typeof a === 'number') { presNumCol = presCols[0]; presTxtCol = presCols[1]; }
+      else if(typeof b === 'number') { presNumCol = presCols[1]; presTxtCol = presCols[0]; }
+    }
+  }
+
+  let currentTipo = null;
+  const flat = [];
+  dataRows.forEach(r => {
+    const tipo = tipoCol !== undefined ? r[tipoCol] : null;
+    const molecula = r[moleculaCol];
+    const conc = concCol !== undefined ? r[concCol] : null;
+    const comercial = comercialCol !== undefined ? r[comercialCol] : null;
+    const nombreErp = erpCol !== undefined ? r[erpCol] : null;
+    const laboratorio = labCol !== undefined ? r[labCol] : null;
+    const presNum = r[presNumCol];
+    const presTxt = r[presTxtCol];
+    const dosisTerap = dosisTerapCol !== undefined ? r[dosisTerapCol] : null;
+    const dosisPractica = dosisPracticaCol !== undefined ? r[dosisPracticaCol] : null;
+    const valor = parseCurrencyValue(r[valorAsociadoCol]);
+    const tieneCostoRaw = tieneCostoCol !== undefined ? r[tieneCostoCol] : null;
+    const tieneCosto = tieneCostoRaw !== null && normalizeStr(tieneCostoRaw) === 'SI';
+    const costoTratamiento = (tieneCosto && costoTratamientoCol !== undefined) ? parseCurrencyValue(r[costoTratamientoCol]) : null;
+
+    if(tipo !== null && tipo !== undefined && String(tipo).trim() !== '') currentTipo = String(tipo).trim();
+    if(molecula === null || molecula === undefined || String(molecula).trim() === '') return;
+    if(valor === null || isNaN(valor)) return;
+
+    const presBase = extractPresBaseUnits(presNum !== null && presNum !== undefined ? presNum : presTxt);
+    if(!presBase || presBase <= 0) return; // sin presentación numérica no se puede calcular Valor/ml
+
+    flat.push({
+      tipo: currentTipo,
+      molecula: String(molecula).trim(),
+      concentracion: conc,
+      comercial: comercial,
+      nombre_erp: (nombreErp !== null && nombreErp !== undefined && normalizeStr(nombreErp) !== 'NO ENCONTRADO') ? String(nombreErp).trim() : null,
+      laboratorio: laboratorio,
+      presentacion: presTxt !== null && presTxt !== undefined ? String(presTxt) : (presNum !== null ? String(presNum) : null),
+      dosis_terapeutica: dosisTerap !== null && dosisTerap !== undefined ? String(dosisTerap) : null,
+      dosis_practica: dosisPractica !== null && dosisPractica !== undefined ? String(dosisPractica) : null,
+      tiene_costo_tratamiento: tieneCosto,
+      costo_tratamiento: costoTratamiento,
+      valor: valor,
+      valor_unit: valor / presBase
+    });
+  });
+
+  if(flat.length === 0) return [];
+
+  const map = new Map();
+  flat.forEach(d => {
+    const key = (d.tipo || '') + '|||' + d.molecula;
+    if(!map.has(key)) map.set(key, {tipo:d.tipo, molecula:d.molecula, items:[]});
+    map.get(key).items.push(d);
+  });
+
+  const tipoOrder = [];
+  flat.forEach(d => { if(!tipoOrder.includes(d.tipo)) tipoOrder.push(d.tipo); });
+
+  const groups = [];
+  map.forEach(g => {
+    g.items.forEach(it => {
+      it.precio_comp = Math.round(it.valor_unit*100)/100;
+      it.unidad = 'unit';
+    });
+    g.items.sort((a,b) => a.precio_comp - b.precio_comp);
+    const best = g.items[0];
+    g.items.forEach(it => {
+      it.dif_money = Math.round((it.precio_comp - best.precio_comp)*100)/100;
+      it.dif_pct = best.precio_comp ? Math.round(((it.precio_comp - best.precio_comp)/best.precio_comp)*1000)/10 : 0;
+      it.es_mejor = (it === best);
+    });
+    groups.push({tipo:g.tipo, molecula:g.molecula, n:g.items.length, items:g.items});
+  });
+
+  groups.sort((a,b) => {
+    const ta = tipoOrder.indexOf(a.tipo), tb = tipoOrder.indexOf(b.tipo);
+    if(ta !== tb) return ta - tb;
+    return a.molecula.localeCompare(b.molecula, 'es');
+  });
+
+  return groups;
+}
+
+
+function showUploadMsg(text, isError){
+  const el = document.getElementById('uploadMsg');
+  el.textContent = text;
+  el.className = 'upload-msg show ' + (isError ? 'err' : 'ok');
+  clearTimeout(showUploadMsg._t);
+  showUploadMsg._t = setTimeout(() => { el.classList.remove('show'); }, 7000);
+}
+
+document.getElementById('uploadBtn').addEventListener('click', () => {
+  document.getElementById('fileInput').click();
+});
+
+document.getElementById('fileInput').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    try{
+      const buf = new Uint8Array(evt.target.result);
+      const wb = XLSX.read(buf, {type:'array'});
+      const newGroups = parseWorkbookToGroups(wb);
+      if(newGroups === null){
+        showUploadMsg('No reconozco las columnas de este Excel. Debe tener al menos: Molécula, Valor Asociado y Presentación.', true);
+        return;
+      }
+      if(newGroups.length === 0){
+        showUploadMsg('No encontré filas válidas. Revisa que cada fila tenga "VALOR ASOCIADO" y una "Presentación" con un número (ej: 100 ml, 500gr, 10kg): con eso calculo el Valor/ml yo mismo.', true);
+        return;
+      }
+      DATA = newGroups;
+      state = {search:'', tipo:'', sort:'impacto'};
+      document.getElementById('searchInput').value = '';
+      document.getElementById('tipoSelect').value = '';
+      document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('.toggle-btn[data-sort="impacto"]').classList.add('active');
+      buildHeroStats();
+      buildTipoSelect();
+      render();
+      const totalProd = newGroups.reduce((a,g) => a+g.n, 0);
+      showUploadMsg(`Datos actualizados: ${totalProd} productos en ${newGroups.length} grupos.`, false);
+    } catch(err){
+      console.error(err);
+      showUploadMsg('No pude leer ese archivo. Verifica que sea el Excel de comparativo (.xlsx) sin proteger con contraseña.', true);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+  document.getElementById('fileInput').value = '';
+});
+
+buildHeroStats();
+buildTipoSelect();
+render();
+
+// ===================== TABS =====================
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ===================== EJEMPLO REAL =====================
+function normalizeStr(s){
+  return String(s == null ? '' : s).toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim();
+}
+
+function buildCatalogIndexes(){
+  const brandIdx = [];
+  const molMap = new Map();
+  DATA.forEach((g, gi) => {
+    if(g.molecula){
+      const mn = normalizeStr(g.molecula);
+      if(!molMap.has(mn)) molMap.set(mn, {gi, molecula:g.molecula, moleculaNorm:mn});
+    }
+    g.items.forEach((it, ii) => {
+      if(!it.comercial) return;
+      brandIdx.push({
+        gi, ii,
+        comercial: it.comercial.trim(),
+        comercialNorm: normalizeStr(it.comercial)
+      });
+    });
+  });
+  brandIdx.sort((a,b) => b.comercialNorm.length - a.comercialNorm.length);
+  const molIdx = Array.from(molMap.values()).sort((a,b) => b.moleculaNorm.length - a.moleculaNorm.length);
+  return {brandIdx, molIdx};
+}
+
+function boundaryMatch(descNorm, needle){
+  const pos = descNorm.indexOf(needle);
+  if(pos === -1) return false;
+  const before = pos === 0 ? ' ' : descNorm[pos-1];
+  const afterPos = pos + needle.length;
+  const after = afterPos >= descNorm.length ? ' ' : descNorm[afterPos];
+  return /[^A-Z0-9]/.test(before) && /[^A-Z0-9]/.test(after);
+}
+
+const FORM_KEYWORDS = ['POMADA','CREMA','GEL','UNGUENTO','SPRAY','TOPICO','OTICO','OFTALMICO','LOCION','CHAMPU','SHAMPOO'];
+
+function matchPedidoLine(desc, catalog){
+  const descNorm = normalizeStr(desc);
+  const descHasFormKeyword = FORM_KEYWORDS.some(k => boundaryMatch(descNorm, k));
+
+  for(const entry of catalog.brandIdx){
+    if(entry.comercialNorm.length < 3) continue;
+    if(boundaryMatch(descNorm, entry.comercialNorm)){
+      const brandHasFormKeyword = FORM_KEYWORDS.some(k => entry.comercialNorm.includes(k));
+      if(descHasFormKeyword && !brandHasFormKeyword) continue; // formulación distinta (pomada/crema/gel...): no es el mismo producto
+      return {gi:entry.gi, ii:entry.ii, tipoMatch:'comercial'};
+    }
+  }
+  const descNoSpace = descNorm.replace(/\s+/g,'');
+  for(const entry of catalog.brandIdx){
+    const needleNoSpace = entry.comercialNorm.replace(/\s+/g,'');
+    if(needleNoSpace.length < 5) continue;
+    if(descNoSpace.includes(needleNoSpace)){
+      const brandHasFormKeyword = FORM_KEYWORDS.some(k => entry.comercialNorm.includes(k));
+      if(descHasFormKeyword && !brandHasFormKeyword) continue;
+      return {gi:entry.gi, ii:entry.ii, tipoMatch:'comercial-aprox'};
+    }
+  }
+  if(descHasFormKeyword) return null; // presentación tópica: no comparar por molécula genérica tampoco
+  for(const entry of catalog.molIdx){
+    if(entry.moleculaNorm.length < 4) continue;
+    if(boundaryMatch(descNorm, entry.moleculaNorm)){
+      return {gi:entry.gi, ii:null, tipoMatch:'molecula'};
+    }
+  }
+  return null;
+}
+
+function findHeaderCol(headers, mustIncludeTokens, exactPreferred){
+  const norm = headers.map(h => normalizeStr(h));
+  if(exactPreferred){
+    const exact = norm.findIndex(h => h === exactPreferred);
+    if(exact !== -1) return exact;
+  }
+  return norm.findIndex(h => mustIncludeTokens.every(tok => h.includes(tok)));
+}
+
+function excelDateToJSDate(val){
+  if(val instanceof Date && !isNaN(val.getTime())) return val;
+  if(typeof val === 'number'){
+    const utcDays = Math.floor(val - 25569);
+    const utcMs = utcDays * 86400 * 1000;
+    const d = new Date(utcMs);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  if(typeof val === 'string' && val.trim() !== ''){
+    const d = new Date(val);
+    if(!isNaN(d.getTime())) return d;
+  }
+  return null;
+}
+
+function parsePedidoWorkbook(workbook){
+  const sheetName = workbook.SheetNames[0];
+  const ws = workbook.Sheets[sheetName];
+  const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:null, raw:true});
+  if(rows.length < 2) return null;
+  const headers = rows[0];
+  const tipoCol = findHeaderCol(headers, ['TIPO'], 'TIPO');
+  const descCol = findHeaderCol(headers, ['DESCRIP']);
+  const cantCol = findHeaderCol(headers, ['CANTIDAD'], 'CANTIDAD');
+  const precioCol = findHeaderCol(headers, ['PRECIO','VENTA']);
+  const granjaCol = findHeaderCol(headers, ['GRANJA'], 'GRANJAS');
+  const asociadoCol = findHeaderCol(headers, ['ASOCIADO'], 'ASOCIADOS');
+  const fechaCol = findHeaderCol(headers, ['FECHA']);
+
+  if(descCol === -1 || cantCol === -1 || precioCol === -1) return null;
+
+  const lines = [];
+  let granja = null;
+  let fecha = null;
+  for(let i=1; i<rows.length; i++){
+    const r = rows[i];
+    if(!r) continue;
+    if(tipoCol !== -1){
+      const t = normalizeStr(r[tipoCol]);
+      if(!t || t !== 'ARTICULO') continue;
+    }
+    const desc = r[descCol];
+    if(!desc || String(desc).trim() === '') continue;
+    const cantidad = Number(r[cantCol]);
+    const precio = Number(r[precioCol]);
+    if(!cantidad || isNaN(cantidad) || isNaN(precio)) continue;
+    lines.push({descripcion: String(desc).trim(), cantidad, precio});
+    if(granja === null && granjaCol !== -1 && r[granjaCol]) granja = String(r[granjaCol]).trim();
+    if(granja === null && asociadoCol !== -1 && r[asociadoCol]) granja = String(r[asociadoCol]).trim();
+    if(fecha === null && fechaCol !== -1 && r[fechaCol]){
+      const d = excelDateToJSDate(r[fechaCol]);
+      if(d) fecha = d;
+    }
+  }
+  if(lines.length === 0) return null;
+  return {lines, granja, fecha};
+}
+
+// ===================== MÚLTIPLES PEDIDOS + PROYECCIÓN =====================
+const MESES_ES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+let pedidosCargados = [];
+let nextPedidoId = 1;
+let catalogIndexes = null;
+
+function bestOptionOf(group){
+  return group.items.reduce((a,b) => (a.valor <= b.valor ? a : b));
+}
+
+function computePedidoTotals(pedido){
+  let totalReal = 0, totalBest = 0, nIdent = 0;
+  pedido.lines.forEach(l => {
+    const lr = l.cantidad * l.precio;
+    totalReal += lr;
+    if(l.gi !== null){
+      nIdent++;
+      const best = bestOptionOf(DATA[l.gi]);
+      totalBest += l.cantidad * best.valor;
+    } else {
+      totalBest += lr;
+    }
+  });
+  return {totalReal, totalBest, ahorro: totalReal - totalBest, nIdent, nLines: pedido.lines.length};
+}
+
+function periodOf(pedido){
+  if(!pedido.fecha) return null;
+  const d = pedido.fecha;
+  return {
+    year: d.getFullYear(),
+    month: d.getMonth() + 1,
+    key: d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'),
+    label: MESES_ES[d.getMonth()] + ' ' + d.getFullYear()
+  };
+}
+
+function catalogOptionsHtml(selectedGi){
+  let html = '<option value="">— sin asignar —</option>';
+  const tipoOrder = [];
+  DATA.forEach(g => { if(!tipoOrder.includes(g.tipo)) tipoOrder.push(g.tipo); });
+  tipoOrder.forEach(tipo => {
+    html += `<optgroup label="${tipo.trim()}">`;
+    DATA.forEach((g, gi) => {
+      if(g.tipo !== tipo) return;
+      const sel = gi === selectedGi ? 'selected' : '';
+      html += `<option value="${gi}" ${sel}>${g.molecula}</option>`;
+    });
+    html += `</optgroup>`;
+  });
+  return html;
+}
+
+function showPedidoMsg(text, isError){
+  const el = document.getElementById('pedidoUploadMsg');
+  el.textContent = text;
+  el.className = 'upload-msg show ' + (isError ? 'err' : 'ok');
+  clearTimeout(showPedidoMsg._t);
+  showPedidoMsg._t = setTimeout(() => el.classList.remove('show'), 8000);
+}
+
+document.getElementById('pedidoUploadBtn').addEventListener('click', () => {
+  document.getElementById('pedidoFileInput').click();
+});
+
+document.getElementById('pedidoFileInput').addEventListener('change', (e) => {
+  const files = Array.from(e.target.files || []);
+  if(files.length === 0) return;
+  if(!catalogIndexes) catalogIndexes = buildCatalogIndexes();
+
+  let processed = 0, failed = 0;
+  const promises = files.map(file => new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try{
+        const buf = new Uint8Array(evt.target.result);
+        const wb = XLSX.read(buf, {type:'array', cellDates:true});
+        const parsed = parsePedidoWorkbook(wb);
+        if(!parsed){ failed++; resolve(); return; }
+        const lines = parsed.lines.map(line => {
+          const m = matchPedidoLine(line.descripcion, catalogIndexes);
+          return {
+            descripcion: line.descripcion,
+            cantidad: line.cantidad,
+            precio: line.precio,
+            gi: m ? m.gi : null,
+            ii: m ? m.ii : null,
+            tipoMatch: m ? m.tipoMatch : null,
+            manual: false
+          };
+        });
+        pedidosCargados.push({
+          id: nextPedidoId++,
+          fileName: file.name,
+          granja: parsed.granja || file.name.replace(/\.[^.]+$/, ''),
+          fecha: parsed.fecha,
+          lines,
+          expanded: false
+        });
+        processed++;
+      } catch(err){
+        console.error(err);
+        failed++;
+      }
+      resolve();
+    };
+    reader.readAsArrayBuffer(file);
+  }));
+
+  Promise.all(promises).then(() => {
+    document.getElementById('pedidoEmpty').style.display = pedidosCargados.length ? 'none' : '';
+    document.getElementById('pedidoResults').style.display = pedidosCargados.length ? 'block' : 'none';
+    renderPedidosAll();
+    let msg = `${processed} pedido(s) agregado(s).`;
+    if(failed) msg += ` ${failed} archivo(s) no se pudieron leer (verifica que tengan Descripción, Cantidad y Precio venta excl. IVA).`;
+    showPedidoMsg(msg, failed > 0 && processed === 0);
+    document.getElementById('pedidoFileInput').value = '';
+  });
+});
+
+document.getElementById('onlyMatchedChk').addEventListener('change', () => {
+  if(pedidosCargados.length) renderPedidosList();
+});
+
+document.getElementById('clearPedidosBtn').addEventListener('click', () => {
+  if(pedidosCargados.length === 0) return;
+  pedidosCargados = [];
+  document.getElementById('pedidoEmpty').style.display = '';
+  document.getElementById('pedidoResults').style.display = 'none';
+});
+
+document.getElementById('pedidosListWrap').addEventListener('change', (e) => {
+  const sel = e.target.closest('.reassign-select');
+  if(!sel) return;
+  const pid = Number(sel.dataset.pedido);
+  const idx = Number(sel.dataset.idx);
+  const p = pedidosCargados.find(x => x.id === pid);
+  if(!p) return;
+  const val = sel.value;
+  p.lines[idx].gi = val === '' ? null : Number(val);
+  p.lines[idx].ii = null;
+  p.lines[idx].manual = val !== '';
+  p.lines[idx].tipoMatch = val === '' ? null : 'manual';
+  renderPedidosAll();
+});
+
+function renderLineTable(pedido){
+  const onlyMatched = document.getElementById('onlyMatchedChk').checked;
+  const entries = pedido.lines.map((l, idx) => ({l, idx})).filter(x => !onlyMatched || x.l.gi !== null);
+
+  const rowsHtml = entries.map(({l, idx}) => {
+    const totalLineaReal = l.cantidad * l.precio;
+    let extraCells;
+    if(l.gi !== null){
+      const group = DATA[l.gi];
+      const best = bestOptionOf(group);
+      const totalLineaBest = l.cantidad * best.valor;
+      const diff = totalLineaReal - totalLineaBest;
+      const pctLinea = totalLineaReal ? (diff/totalLineaReal)*100 : 0;
+      const badgeClass = l.manual ? 'manual' : (l.tipoMatch === 'molecula' ? 'molecula' : 'auto');
+      const badgeText = l.manual ? '✏️ manual' : (l.tipoMatch === 'molecula' ? '⚙ por molécula' : (l.tipoMatch === 'comercial-aprox' ? '≈ aproximado' : '✓ automático'));
+      const sign = diff >= 0 ? 'savings-pos' : 'savings-neg';
+      const label = diff >= 0 ? 'ahorro' : 'más caro si se cambia';
+      extraCells = `
+        <td>
+          <span class="status-badge ${badgeClass}">${badgeText}</span>
+          <div style="margin-top:6px;font-size:12px;color:var(--text-mute);">${group.molecula}<br><span style="font-size:10.5px;">${group.tipo.trim()}</span></div>
+        </td>
+        <td>
+          <div class="best-opt-name">${best.comercial}</div>
+          <div class="best-opt-lab">${best.laboratorio}</div>
+          <div class="amt" style="margin-top:4px;">${fmtCOP.format(best.valor)}</div>
+        </td>
+        <td class="amt">${fmtCOP.format(totalLineaBest)}</td>
+        <td class="${sign}">${fmtCOP.format(Math.abs(diff))}<br>${label} (${Math.abs(pctLinea).toFixed(1)}%)</td>
+      `;
+    } else {
+      extraCells = `
+        <td><span class="status-badge none">sin identificar</span></td>
+        <td colspan="3" style="color:var(--text-mute);font-style:italic;">No coincide con el catálogo de medicamentos comparados.</td>
+      `;
+    }
+    return `
+      <tr class="${l.gi === null ? 'unmatched' : ''}">
+        <td>${l.descripcion}</td>
+        <td class="amt">${l.cantidad}</td>
+        <td class="amt">${fmtCOP.format(l.precio)}</td>
+        <td class="amt">${fmtCOP.format(totalLineaReal)}</td>
+        ${extraCells}
+        <td><select class="reassign-select" data-pedido="${pedido.id}" data-idx="${idx}">${catalogOptionsHtml(l.gi)}</select></td>
+      </tr>
+    `;
+  }).join('');
+
+  return `
+    <div class="pedido-table-scroll">
+      <table class="pedido-table">
+        <thead>
+          <tr>
+            <th>Descripción (pedido)</th>
+            <th>Cant.</th>
+            <th>Precio pedido</th>
+            <th>Valor total pedido</th>
+            <th>Estado / grupo</th>
+            <th>Mejor opción disponible</th>
+            <th>Valor total opción</th>
+            <th>Diferencia</th>
+            <th>Reasignar</th>
+          </tr>
+        </thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderAggregateSummary(){
+  let totalReal = 0, totalBest = 0;
+  pedidosCargados.forEach(p => {
+    const t = computePedidoTotals(p);
+    totalReal += t.totalReal;
+    totalBest += t.totalBest;
+  });
+  const ahorro = totalReal - totalBest;
+  const pct = totalReal ? (ahorro/totalReal)*100 : 0;
+  const ticks = Array.from({length:10}).map(()=>'<span></span>').join('');
+
+  document.getElementById('pedidoSummary').innerHTML = `
+    <div class="gauge"><div class="ticks">${ticks}</div><span class="val">${fmtCOP.format(totalReal)}</span><div class="lbl">Total real acumulado (${pedidosCargados.length} pedido${pedidosCargados.length===1?'':'s'})</div></div>
+    <div class="gauge"><div class="ticks">${ticks}</div><span class="val sage">${fmtCOP.format(totalBest)}</span><div class="lbl">Total con la opción más económica en cada línea identificada</div></div>
+    <div class="gauge"><div class="ticks">${ticks}</div><span class="val accent">${fmtCOP.format(Math.max(ahorro,0))}</span><div class="lbl">Ahorro potencial acumulado (${pct.toFixed(1)}%)</div></div>
+  `;
+}
+
+function renderPedidosList(){
+  const wrap = document.getElementById('pedidosListWrap');
+  if(pedidosCargados.length === 0){ wrap.innerHTML = ''; return; }
+
+  wrap.innerHTML = pedidosCargados.map(p => {
+    const t = computePedidoTotals(p);
+    const per = periodOf(p);
+    const periodoLabel = per ? per.label : 'sin fecha de envío en el archivo';
+    return `
+      <div class="pedido-card">
+        <div class="pedido-card-head">
+          <div>
+            <div class="pedido-card-title">${p.granja}</div>
+            <div class="pedido-card-meta">${periodoLabel} · ${p.fileName} · ${t.nIdent}/${t.nLines} líneas identificadas</div>
+          </div>
+          <div class="pedido-card-nums">
+            <div><span class="lbl-mini">Real</span><span class="amt">${fmtCOP.format(t.totalReal)}</span></div>
+            <div><span class="lbl-mini">Mejor opción</span><span class="amt sage-text">${fmtCOP.format(t.totalBest)}</span></div>
+            <div><span class="lbl-mini">Ahorro</span><span class="amt ${t.ahorro>=0?'savings-pos':'savings-neg'}">${fmtCOP.format(Math.abs(t.ahorro))}</span></div>
+          </div>
+          <div class="pedido-card-actions">
+            <button class="mini-btn" data-toggle="${p.id}" type="button">${p.expanded ? 'Ocultar detalle' : 'Ver detalle'}</button>
+            <button class="mini-btn danger" data-remove="${p.id}" type="button">Quitar</button>
+          </div>
+        </div>
+        ${p.expanded ? `<div class="pedido-card-detail">${renderLineTable(p)}</div>` : ''}
+      </div>
+    `;
+  }).join('');
+
+  wrap.querySelectorAll('[data-toggle]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.toggle);
+      const p = pedidosCargados.find(x => x.id === id);
+      p.expanded = !p.expanded;
+      renderPedidosList();
+    });
+  });
+  wrap.querySelectorAll('[data-remove]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.remove);
+      pedidosCargados = pedidosCargados.filter(x => x.id !== id);
+      document.getElementById('pedidoEmpty').style.display = pedidosCargados.length ? 'none' : '';
+      document.getElementById('pedidoResults').style.display = pedidosCargados.length ? 'block' : 'none';
+      renderPedidosAll();
+    });
+  });
+}
+
+function renderProjection(){
+  const wrap = document.getElementById('pedidoProjectionWrap');
+  if(pedidosCargados.length === 0){ wrap.innerHTML = ''; return; }
+
+  const monthMap = new Map();
+  let sinFecha = 0;
+  pedidosCargados.forEach(p => {
+    const per = periodOf(p);
+    const t = computePedidoTotals(p);
+    if(!per){ sinFecha++; return; }
+    if(!monthMap.has(per.key)) monthMap.set(per.key, {label:per.label, year:per.year, month:per.month, ahorro:0, real:0, best:0, count:0});
+    const m = monthMap.get(per.key);
+    m.ahorro += t.ahorro; m.real += t.totalReal; m.best += t.totalBest; m.count++;
+  });
+
+  const months = Array.from(monthMap.values()).sort((a,b) => (a.year - b.year) || (a.month - b.month));
+
+  if(months.length === 0){
+    wrap.innerHTML = `<p class="proj-note">Ninguno de los pedidos cargados tiene una fecha de envío identificable, así que no puedo proyectar por mes. Agrega pedidos que incluyan la columna "Fecha envío" para ver la proyección por semestre y año.</p>`;
+    return;
+  }
+
+  const totalAhorro = months.reduce((a,m) => a + m.ahorro, 0);
+  const avgMonthly = totalAhorro / months.length;
+  const projSemestre = avgMonthly * 6;
+  const projAnual = avgMonthly * 12;
+  const ticks = Array.from({length:10}).map(()=>'<span></span>').join('');
+
+  const rowsHtml = months.map(m => `
+    <tr>
+      <td>${m.label}</td>
+      <td class="amt">${m.count}</td>
+      <td class="amt">${fmtCOP.format(m.real)}</td>
+      <td class="amt">${fmtCOP.format(m.best)}</td>
+      <td class="${m.ahorro>=0?'savings-pos':'savings-neg'}">${fmtCOP.format(Math.abs(m.ahorro))}</td>
+    </tr>
+  `).join('');
+
+  wrap.innerHTML = `
+    <div class="pedido-table-scroll" style="margin-bottom:22px;">
+      <table class="pedido-table">
+        <thead>
+          <tr><th>Mes</th><th>Pedidos</th><th>Total real</th><th>Total mejor opción</th><th>Ahorro</th></tr>
+        </thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    </div>
+    <div class="gauge-row real-summary">
+      <div class="gauge"><div class="ticks">${ticks}</div><span class="val">${fmtCOP.format(avgMonthly)}</span><div class="lbl">Ahorro promedio mensual observado (${months.length} mes${months.length===1?'':'es'} con datos)</div></div>
+      <div class="gauge"><div class="ticks">${ticks}</div><span class="val sage">${fmtCOP.format(projSemestre)}</span><div class="lbl">Proyección semestral (6 meses)</div></div>
+      <div class="gauge"><div class="ticks">${ticks}</div><span class="val accent">${fmtCOP.format(projAnual)}</span><div class="lbl">Proyección anual (12 meses)</div></div>
+    </div>
+    <p class="proj-note">Proyección lineal basada en el promedio mensual observado en los pedidos cargados${sinFecha ? ` (${sinFecha} pedido${sinFecha===1?'':'s'} sin fecha de envío no se incluyeron en esta proyección)` : ''}. No reemplaza el seguimiento mes a mes real.</p>
+  `;
+}
+
+function renderPedidosAll(){
+  renderAggregateSummary();
+  renderPedidosList();
+  renderProjection();
+}
+
+// ===================== MODO ADMINISTRADOR =====================
+const ADMIN_PASSWORD = 'cercafe2026'; // cámbiala aquí si quieres otra contraseña
+
+function isAdminMode(){
+  return localStorage.getItem('cercafeAdminMode') === 'true';
+}
+
+function applyAdminVisibility(){
+  const show = isAdminMode();
+  document.body.classList.toggle('admin-mode', show);
+  if(!show){
+    // si estaba en "Ejemplo real" y se sale del modo admin, volver a Comparativo
+    const realPanel = document.getElementById('tab-real');
+    if(realPanel && realPanel.classList.contains('active')){
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelector('.tab-btn[data-tab="comparativo"]').classList.add('active');
+      document.getElementById('tab-comparativo').classList.add('active');
+    }
+  }
+}
+
+const ADMIN_HASH = '#cercafe-panel-8x2k'; // cámbialo aquí si quieres otro "código secreto"
+
+function checkAdminHashTrigger(){
+  if(window.location.hash !== ADMIN_HASH) return;
+  // limpiar el hash de la URL de inmediato para que no quede visible ni se pueda compartir el enlace por error
+  history.replaceState(null, '', window.location.pathname + window.location.search);
+  if(isAdminMode()){
+    if(window.confirm('Modo administrador ya activo en este navegador. ¿Quieres salir?')){
+      localStorage.removeItem('cercafeAdminMode');
+      applyAdminVisibility();
+    }
+    return;
+  }
+  const pass = window.prompt('Contraseña de administrador:');
+  if(pass === null) return;
+  if(pass === ADMIN_PASSWORD){
+    localStorage.setItem('cercafeAdminMode', 'true');
+    applyAdminVisibility();
+  } else {
+    alert('Contraseña incorrecta.');
+  }
+}
+
+window.addEventListener('hashchange', checkAdminHashTrigger);
+checkAdminHashTrigger();
+
+applyAdminVisibility();
+
+
+
+</script>
+</body>
+</html>
