@@ -117,6 +117,10 @@ body{
   gap:0;
   border-top:1px solid var(--line);
 }
+#heroStats{
+  grid-template-columns:repeat(2,1fr);
+  max-width:620px;
+}
 .gauge{
   padding:22px 22px 4px 0;
   border-right:1px solid var(--line);
@@ -4209,10 +4213,6 @@ function unitLabel(unidad){
 
 // ---------- Hero stats ----------
 function buildHeroStats(){
-  const comparable = DATA.filter(g => g.n > 1);
-  const allDiffs = comparable.map(g => g.items[g.items.length-1].dif_pct);
-  const avgDiff = allDiffs.reduce((a,b)=>a+b,0) / allDiffs.length;
-  const maxDiff = Math.max(...allDiffs);
   const totalProductos = DATA.reduce((a,g)=>a+g.n,0);
   const labs = new Set();
   DATA.forEach(g => g.items.forEach(it => { if(it.laboratorio) labs.add(it.laboratorio.trim().toLowerCase()); }));
@@ -4220,8 +4220,6 @@ function buildHeroStats(){
   const stats = [
     {val: totalProductos, lbl:'productos de ' + DATA.length + ' grupos comparativos', accent:false},
     {val: labs.size, lbl:'laboratorios distintos en el comparativo', accent:false},
-    {val: '+' + Math.round(avgDiff) + '%', lbl:'diferencia promedio entre la opción más cara y la más económica', accent:'sage'},
-    {val: '+' + Math.round(maxDiff) + '%', lbl:'mayor diferencia encontrada en un solo grupo', accent:'gold'},
   ];
 
   const el = document.getElementById('heroStats');
