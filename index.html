@@ -8,7 +8,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js" crossorigin="anonymous"></script>
 <style>
 :root{
   --ink:#221812;
@@ -1005,82 +1004,120 @@ footer b{color:var(--vinotinto-deep);}
     showScreen('loginScreen');
   }
 
-  // Si algo se demora más de 8 segundos (CDN caído, red lenta, etc.), no dejar la pantalla de carga pegada.
+  // Si algo se demora más de 12 segundos (CDNs caídos, red lenta, etc.), no dejar la pantalla de carga pegada.
   var safetyTimeout = setTimeout(function(){
     showLoginError('La verificación de sesión está tardando más de lo normal. Revisa tu conexión e inténtalo de nuevo.');
-  }, 8000);
+  }, 12000);
 
-  if(typeof msal === 'undefined'){
-    clearTimeout(safetyTimeout);
-    showLoginError('No se pudo cargar el sistema de inicio de sesión de Microsoft (falló la librería MSAL). Recarga la página; si el problema sigue, revisa tu conexión a internet.');
-    return;
+  function loadScript(src){
+    return new Promise(function(resolve, reject){
+      var s = document.createElement('script');
+      s.src = src;
+      s.crossOrigin = 'anonymous';
+      s.onload = function(){ resolve(); };
+      s.onerror = function(){ reject(new Error('No se pudo cargar: ' + src)); };
+      document.head.appendChild(s);
+    });
   }
 
-  var msalConfig = {
-    auth: {
-      clientId: '5d4e5dd1-82f1-48d0-a0b0-f104d938c770',
-      authority: 'https://login.microsoftonline.com/f2ea1671-e87d-4f02-9941-b721acbdbc01',
-      redirectUri: 'https://cercafe-kpis.github.io/comparativo-medicamentos/'
-    },
-    cache: {
-      cacheLocation: 'localStorage',
-      storeAuthStateInCookie: false
+  // Varias fuentes distintas por si alguna está bloqueada en la red de Cercafe.
+  var MSAL_SOURCES = [
+    'https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js',
+    'https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.3/lib/msal-browser.min.js',
+    'https://unpkg.com/@azure/msal-browser@2.38.3/lib/msal-browser.min.js'
+  ];
+
+  function loadMsalWithFallback(idx){
+    idx = idx || 0;
+    if(idx >= MSAL_SOURCES.length){
+      return Promise.reject(new Error('No se pudo cargar la librería de inicio de sesión desde ninguna fuente.'));
     }
-  };
+    return loadScript(MSAL_SOURCES[idx]).catch(function(){
+      return loadMsalWithFallback(idx + 1);
+    });
+  }
 
-  var msalInstance;
-  try{
-    msalInstance = new msal.PublicClientApplication(msalConfig);
-  } catch(err){
+  loadMsalWithFallback().then(function(){
+    startAuthFlow();
+  }).catch(function(err){
     clearTimeout(safetyTimeout);
-    console.error('Error creando MSAL:', err);
-    showLoginError('No se pudo iniciar el sistema de acceso (' + err.message + '). Contacta al administrador.');
-    return;
-  }
-
-  function renderUserChip(account){
-    var chip = document.getElementById('userChip');
-    if(!chip) return;
-    var name = account.name || account.username || '';
-    chip.innerHTML = '👤 ' + name + ' · <a id="logoutLink">Cerrar sesión</a>';
-    document.getElementById('logoutLink').addEventListener('click', function(){
-      msalInstance.logoutRedirect();
-    });
-  }
-
-  function initAuth(){
-    msalInstance.handleRedirectPromise().then(function(response){
-      clearTimeout(safetyTimeout);
-      var account = null;
-      if(response && response.account){
-        account = response.account;
-      } else {
-        var accounts = msalInstance.getAllAccounts();
-        if(accounts.length > 0) account = accounts[0];
-      }
-      if(account){
-        msalInstance.setActiveAccount(account);
-        renderUserChip(account);
-        showScreen('appContent');
-      } else {
-        showScreen('loginScreen');
-      }
-    }).catch(function(err){
-      clearTimeout(safetyTimeout);
-      console.error('Error de autenticación:', err);
-      showLoginError('Hubo un problema al iniciar sesión (' + (err && err.errorCode ? err.errorCode : 'error desconocido') + '). Intenta de nuevo.');
-    });
-  }
-
-  document.getElementById('loginBtn').addEventListener('click', function(){
-    document.getElementById('authErrorMsg').textContent = '';
-    msalInstance.loginRedirect({ scopes: ['User.Read'] }).catch(function(err){
-      console.error('Error al iniciar loginRedirect:', err);
-      showLoginError('No se pudo abrir el inicio de sesión de Microsoft. Intenta de nuevo.');
-    });
+    console.error(err);
+    showLoginError('No se pudo cargar el sistema de inicio de sesión de Microsoft (revisa tu conexión o si tu red bloquea CDNs externos). Recarga la página para reintentar.');
   });
 
-  initAuth();
+  function startAuthFlow(){
+    if(typeof msal === 'undefined'){
+      clearTimeout(safetyTimeout);
+      showLoginError('La librería de inicio de sesión cargó incompleta. Recarga la página.');
+      return;
+    }
+
+    var msalConfig = {
+      auth: {
+        clientId: '5d4e5dd1-82f1-48d0-a0b0-f104d938c770',
+        authority: 'https://login.microsoftonline.com/f2ea1671-e87d-4f02-9941-b721acbdbc01',
+        redirectUri: 'https://cercafe-kpis.github.io/comparativo-medicamentos/'
+      },
+      cache: {
+        cacheLocation: 'localStorage',
+        storeAuthStateInCookie: false
+      }
+    };
+
+    var msalInstance;
+    try{
+      msalInstance = new msal.PublicClientApplication(msalConfig);
+    } catch(err){
+      clearTimeout(safetyTimeout);
+      console.error('Error creando MSAL:', err);
+      showLoginError('No se pudo iniciar el sistema de acceso (' + err.message + '). Contacta al administrador.');
+      return;
+    }
+
+    function renderUserChip(account){
+      var chip = document.getElementById('userChip');
+      if(!chip) return;
+      var name = account.name || account.username || '';
+      chip.innerHTML = '👤 ' + name + ' · <a id="logoutLink">Cerrar sesión</a>';
+      document.getElementById('logoutLink').addEventListener('click', function(){
+        msalInstance.logoutRedirect();
+      });
+    }
+
+    function initAuth(){
+      msalInstance.handleRedirectPromise().then(function(response){
+        clearTimeout(safetyTimeout);
+        var account = null;
+        if(response && response.account){
+          account = response.account;
+        } else {
+          var accounts = msalInstance.getAllAccounts();
+          if(accounts.length > 0) account = accounts[0];
+        }
+        if(account){
+          msalInstance.setActiveAccount(account);
+          renderUserChip(account);
+          showScreen('appContent');
+        } else {
+          showScreen('loginScreen');
+        }
+      }).catch(function(err){
+        clearTimeout(safetyTimeout);
+        console.error('Error de autenticación:', err);
+        showLoginError('Hubo un problema al iniciar sesión (' + (err && err.errorCode ? err.errorCode : 'error desconocido') + '). Intenta de nuevo.');
+      });
+    }
+
+    document.getElementById('loginBtn').addEventListener('click', function(){
+      document.getElementById('authErrorMsg').textContent = '';
+      msalInstance.loginRedirect({ scopes: ['User.Read'] }).catch(function(err){
+        console.error('Error al iniciar loginRedirect:', err);
+        showLoginError('No se pudo abrir el inicio de sesión de Microsoft. Intenta de nuevo.');
+      });
+    });
+
+    initAuth();
+  }
 })();
 </script>
 
