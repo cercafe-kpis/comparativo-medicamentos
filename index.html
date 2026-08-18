@@ -4491,14 +4491,26 @@ function findColsByHeader(headers, mustIncludeTokens){
   return out;
 }
 
+function findHeaderRowIndex(rows, anchorToken){
+  // Busca la fila que realmente tiene los encabezados (por si hay una fila vacía antes)
+  const anchor = anchorToken || 'MOLECULA';
+  const limit = Math.min(rows.length, 6);
+  for(let i = 0; i < limit; i++){
+    const norm = (rows[i] || []).map(h => normalizeStr(h));
+    if(norm.some(h => h.includes(anchor))) return i;
+  }
+  return 0;
+}
+
 function parseWorkbookToGroups(workbook){
   const preferredSheet = workbook.SheetNames.find(n => normalizeStr(n) === 'PRUEBA');
   const sheetName = preferredSheet || workbook.SheetNames[0];
   const ws = workbook.Sheets[sheetName];
   const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:null, raw:true});
   if(rows.length < 2) return [];
-  const headers = rows[0];
-  const dataRows = rows.slice(1);
+  const headerRowIdx = findHeaderRowIndex(rows);
+  const headers = rows[headerRowIdx];
+  const dataRows = rows.slice(headerRowIdx + 1);
 
   const tipoCol = findColsByHeader(headers, ['TIPO'])[0] ?? findColsByHeader(headers, ['GRUPO'])[0];
   const moleculaCol = findColsByHeader(headers, ['MOLECULA'])[0];
@@ -4768,7 +4780,8 @@ function parsePedidoWorkbook(workbook){
   const ws = workbook.Sheets[sheetName];
   const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:null, raw:true});
   if(rows.length < 2) return null;
-  const headers = rows[0];
+  const headerRowIdx = findHeaderRowIndex(rows, 'DESCRIP');
+  const headers = rows[headerRowIdx];
   const tipoCol = findHeaderCol(headers, ['TIPO'], 'TIPO');
   const descCol = findHeaderCol(headers, ['DESCRIP']);
   const cantCol = findHeaderCol(headers, ['CANTIDAD'], 'CANTIDAD');
@@ -4782,7 +4795,7 @@ function parsePedidoWorkbook(workbook){
   const lines = [];
   let granja = null;
   let fecha = null;
-  for(let i=1; i<rows.length; i++){
+  for(let i=headerRowIdx+1; i<rows.length; i++){
     const r = rows[i];
     if(!r) continue;
     if(tipoCol !== -1){
