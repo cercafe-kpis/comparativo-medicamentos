@@ -480,6 +480,10 @@ main{max-width:1160px; margin:0 auto; padding:36px 32px 90px;}
   font-weight:600;
   font-family:'IBM Plex Mono',monospace;
 }
+.prod-id .costo-line .costo-note{
+  font-weight:400;
+  color:var(--text-mute);
+}
 .unit-lbl{
   display:block;
   font-size:10px;
@@ -4337,7 +4341,7 @@ function extraInfoHtml(it){
     html += `<div class="erp-line">🏷️ ERP: ${it.nombre_erp}</div>`;
   }
   if(it.tiene_costo_tratamiento && it.costo_tratamiento !== null && it.costo_tratamiento !== undefined){
-    html += `<div class="costo-line">💊 Costo del tratamiento: ${fmtCOP.format(it.costo_tratamiento)}</div>`;
+    html += `<div class="costo-line">💊 Costo del tratamiento: ${fmtCOP.format(it.costo_tratamiento)}<span class="costo-note"> (calculado para un cerdo de 100 kg)</span></div>`;
   }
   return html;
 }
@@ -4348,8 +4352,6 @@ function renderGroupCard(g, highlight){
   const maxPrice = Math.max(...items.map(it => it.precio_comp));
   const minPrice = items[0].precio_comp;
   const worst = items[items.length-1];
-
-  const concStr = fmtConc(items[0].concentracion);
 
   let impactBadge = '';
   if(isComparable){
@@ -4426,7 +4428,6 @@ function renderGroupCard(g, highlight){
           <h3>${g.molecula}</h3>
           <div class="group-meta">
             <span class="chip">${g.tipo.trim()}</span>
-            ${concStr ? `<span class="chip">${concStr}</span>` : ''}
             <span>${g.n} ${g.n === 1 ? 'opción registrada' : 'opciones comparadas'}</span>
           </div>
         </div>
